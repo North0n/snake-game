@@ -1,0 +1,19 @@
+cmake_minimum_required(VERSION 3.23)
+project(utilities LANGUAGES CXX)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+ADD_DEFINITIONS(-DUNICODE)
+
+ADD_DEFINITIONS(-D_UNICODE)
+
+file(GLOB SOURCES *.h *.cpp)
+
+if (NOT TARGET ${PROJECT_NAME})
+    add_library(${PROJECT_NAME} STATIC ${SOURCES})
+endif()
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE _UNICODE)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
