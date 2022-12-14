@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include "widgets/mainwindow.h"
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                       _In_opt_ HINSTANCE hPrevInstance,
@@ -6,7 +6,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                       _In_ int nCmdShow)
 {
     MainWindow win;
-    if (!win.create(L"Snake Game", WS_OVERLAPPEDWINDOW)) {
+    if (!win.create(L"SnakeGameMainWindow", WS_OVERLAPPEDWINDOW)) {
         return 0;
     }
 
