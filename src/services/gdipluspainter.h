@@ -10,14 +10,16 @@
 class GdiPlusPainter
 {
 public:
-    GdiPlusPainter(HDC hdc);
+    GdiPlusPainter(Gdiplus::Graphics& graphics);
 
     void draw(const Snake& snake);
     void draw(const Apple& apple);
 
 private:
-    HDC m_hdc{};
-    Gdiplus::Graphics m_graphics;
+    Gdiplus::Graphics& m_graphics;
+
     Gdiplus::Pen m_snakePen{Gdiplus::Color::Red};
     Gdiplus::Pen m_applePen{Gdiplus::Color::YellowGreen};
+    Gdiplus::SolidBrush m_snakeBrush{Gdiplus::Color::Red};
+    Gdiplus::SolidBrush m_appleBrush{Gdiplus::Color::YellowGreen};
 };

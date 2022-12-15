@@ -12,6 +12,37 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         SetFocus(m_hwnd);
         return 0;
     }
+    case WM_TIMER: {
+        auto nextPoint = m_snake->position() + m_snakeDirection * m_snakeSpeed;
+        if (m_apple->position().isBetween(m_snake->position(), nextPoint)) {
+            m_snake->appendSegment();
+            m_apple = std::make_unique<Apple>(generateApplePosition(), AppleSideLength);
+        }
+        m_snake->moveOn(m_snakeDirection * m_snakeSpeed);
+        InvalidateRect(m_hwnd, nullptr, TRUE);
+        return 0;
+    }
+    case WM_KEYDOWN: {
+        Vector direction{};
+        switch (wParam) {
+        case VK_UP:
+            direction = {0, -1};
+            break;
+        case VK_DOWN:
+            direction = {0, 1};
+            break;
+        case VK_LEFT:
+            direction = {-1, 0};
+            break;
+        case VK_RIGHT:
+            direction = {1, 0};
+            break;
+        }
+        if (direction != Vector{} && direction != -m_snakeDirection) {
+            m_snakeDirection = direction;
+        }
+        return 0;
+    }
     case WM_CREATE: {
         EnumChildWindows(m_hwnd, (WNDENUMPROC)&SnakeGame::setFont,
                          (LPARAM)GetStockObject(DEFAULT_GUI_FONT));
@@ -23,20 +54,30 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         m_snake = std::make_unique<Snake>(Point(m_windowWidth / 2, m_windowHeight / 2), HeadSideLength, BodySideLength);
         m_apple = std::make_unique<Apple>(generateApplePosition(), AppleSideLength);
+
+        SetTimer(m_hwnd, SnakeGameTimerId, SnakeGameTimerInterval, nullptr);
         return 0;
     }
     case WM_PAINT: {
         PAINTSTRUCT ps;
         auto hdc = BeginPaint(m_hwnd, &ps);
-        FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
-        m_painter = std::make_unique<GdiPlusPainter>(hdc);
+        Gdiplus::Graphics graphics(hdc);
+        Gdiplus::Bitmap bitmap(ps.rcPaint.right - ps.rcPaint.left, ps.rcPaint.bottom - ps.rcPaint.top, &graphics);
+        Gdiplus::Graphics graphicsBack(&bitmap);
+        graphicsBack.Clear(Gdiplus::Color::White);
+        m_painter = std::make_unique<GdiPlusPainter>(graphicsBack);
         m_painter->draw(*m_snake);
         m_painter->draw(*m_apple);
         m_painter = nullptr;
+        graphics.DrawImage(&bitmap, 0, 0, 0, 0,
+                           ps.rcPaint.right - ps.rcPaint.left, ps.rcPaint.bottom - ps.rcPaint.top, Gdiplus::UnitPixel);
         EndPaint(m_hwnd, &ps);
         return 0;
     }
+    case WM_ERASEBKGND:
+        return TRUE;
     case WM_DESTROY: {
+        KillTimer(m_hwnd, SnakeGameTimerId);
         PostQuitMessage(0);
         return 0;
     }

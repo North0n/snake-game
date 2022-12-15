@@ -20,6 +20,7 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         m_snakeGame->create(L"Snake Game", WS_CHILD | WS_VISIBLE, 0,
                             10, 10, rect.right - rect.left - 10, rect.bottom - rect.top - 10,
                             m_hwnd, (HBRUSH)(COLOR_BTNFACE + 1));
+        SetFocus(m_snakeGame->window());
         EnumChildWindows(m_hwnd, (WNDENUMPROC)&MainWindow::setFont,
                          (LPARAM)GetStockObject(DEFAULT_GUI_FONT));
         return 0;
