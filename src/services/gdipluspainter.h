@@ -18,7 +18,7 @@ public:
 private:
     Gdiplus::Graphics& m_graphics;
 
-    Gdiplus::Pen m_snakePen{Gdiplus::Color::Red};
+    Gdiplus::Pen m_snakePen{Gdiplus::Color::Black};
     Gdiplus::Pen m_applePen{Gdiplus::Color::YellowGreen};
     Gdiplus::SolidBrush m_snakeBrush{Gdiplus::Color::Red};
     Gdiplus::SolidBrush m_appleBrush{Gdiplus::Color::YellowGreen};

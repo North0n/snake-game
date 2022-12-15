@@ -4,6 +4,7 @@
 #include "entities/snake.h"
 #include "iwindow.h"
 #include "services/gdipluspainter.h"
+#include "services/gridaligner.h"
 
 #include <chrono>
 #include <memory>
@@ -17,23 +18,23 @@ public:
     LRESULT handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 
 private:
-    static constexpr inline int HeadSideLength  = 10;
-    static constexpr inline int BodySideLength  = 10;
-    static constexpr inline int AppleSideLength = 10;
+    static constexpr inline int HeadSideLength = 40;
+    static constexpr inline int CellSize       = 40;
 
-    static constexpr inline int SnakeGameTimerId = 1;
-    static constexpr inline int SnakeGameTimerInterval = 32; // in milliseconds
+    static constexpr inline int SnakeGameTimerId       = 1;
+    static constexpr inline int SnakeGameTimerInterval = 64; // in milliseconds
 
     static inline std::mt19937 m_random{std::random_device{}()};
     static inline std::uniform_int_distribution<> m_distribution{};
 
     [[nodiscard]] Point generateApplePosition() const;
 
+    GridAligner m_gridAligner{CellSize};
+
     int m_windowWidth;
     int m_windowHeight;
 
     Vector m_snakeDirection{1, 0};
-    int m_snakeSpeed{10};
 
     std::unique_ptr<Snake> m_snake;
     std::unique_ptr<Apple> m_apple;

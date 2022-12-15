@@ -27,7 +27,7 @@ void Snake::moveOn(Vector vector)
 
 void Snake::appendSegment()
 {
-    m_body.emplace_back(Point{0, 0}, m_bodySideLength);
+    m_body.emplace_back(m_head.position(), m_bodySideLength);
 }
 
 bool Snake::contains(Point point) const
