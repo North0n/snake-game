@@ -14,7 +14,14 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
     case WM_TIMER: {
         auto nextPoint = m_gridAligner.toCellCoords(m_snake->position() + m_snakeDirection * CellSize);
-        if (m_apple->position().isBetween(m_snake->position(), nextPoint)) {
+        if (m_snake->contains(nextPoint) ||
+            nextPoint.x < 0|| nextPoint.x >= m_windowWidth ||
+            nextPoint.y < 0 || nextPoint.y >= m_windowHeight) {
+            KillTimer(m_hwnd, SnakeGameTimerId);
+            MessageBox(m_hwnd, L"Game Over", L"Snake Game", MB_OK | MB_ICONEXCLAMATION);
+            return 0;
+        }
+        if (m_apple->position() == nextPoint) {
             m_snake->appendSegment();
             m_apple = std::make_unique<Apple>(generateApplePosition(), CellSize);
             if (m_snakeGameTimerInterval > MinSnakeGameTimerInterval) {
