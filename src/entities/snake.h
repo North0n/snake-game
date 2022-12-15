@@ -15,6 +15,8 @@ public:
 
     void appendSegment();
 
+    [[nodiscard]] bool contains(Point point) const;
+
     [[nodiscard]] Point position() const { return m_head.position(); }
 
     [[nodiscard]] int headRadius() const { return m_head.radius(); }
