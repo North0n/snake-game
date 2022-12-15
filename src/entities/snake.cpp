@@ -2,14 +2,14 @@
 
 #include <algorithm>
 
-Snake::Snake(Point point, int headRadius, int bodyRadius)
-    : m_head(point, headRadius)
-    , m_bodyRadius(bodyRadius)
+Snake::Snake(Point point, int headSideLength, int bodySideLength)
+    : m_head(point, headSideLength)
+    , m_bodySideLength(bodySideLength)
 {
 }
 
-Snake::Snake(int x, int y, int headRadius, int bodyRadius)
-    : Snake(Point(x, y), headRadius, bodyRadius)
+Snake::Snake(int x, int y, int headSideLength, int bodySideLength)
+    : Snake(Point(x, y), headSideLength, bodySideLength)
 {
 }
 
@@ -27,7 +27,7 @@ void Snake::moveOn(Vector vector)
 
 void Snake::appendSegment()
 {
-    m_body.emplace_back(Point{0, 0}, m_bodyRadius);
+    m_body.emplace_back(Point{0, 0}, m_bodySideLength);
 }
 
 bool Snake::contains(Point point) const

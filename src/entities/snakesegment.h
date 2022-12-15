@@ -5,9 +5,9 @@
 class SnakeSegment
 {
 public:
-    SnakeSegment(int x, int y, int radius);
+    SnakeSegment(int x, int y, int sideLength);
 
-    SnakeSegment(Point point, int radius);
+    SnakeSegment(Point point, int sideLength);
 
     void moveOn(Vector vector);
 
@@ -15,9 +15,9 @@ public:
 
     [[nodiscard]] Point position() const { return m_point; }
 
-    [[nodiscard]] int radius() const { return m_radius; }
+    [[nodiscard]] int sideLength() const { return m_sideLength; }
 
 private:
     Point m_point;
-    int m_radius;
+    int m_sideLength;
 };

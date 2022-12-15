@@ -5,11 +5,15 @@
 class Apple
 {
 public:
-    Apple(int x, int y, int radius);
+    Apple(int x, int y, int sideLength);
 
-    Apple(Point point, int radius);
+    Apple(Point point, int sideLength);
+
+    [[nodiscard]] Point position() const { return m_position; }
+
+    [[nodiscard]] int sideLength() const { return m_sideLength; }
 
 private:
     Point m_position;
-    int m_radius;
+    int m_sideLength;
 };

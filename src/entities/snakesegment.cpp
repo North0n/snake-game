@@ -1,13 +1,13 @@
 #include "snakesegment.h"
 
-SnakeSegment::SnakeSegment(int x, int y, int radius)
-    : SnakeSegment(Point(x, y), radius)
+SnakeSegment::SnakeSegment(int x, int y, int sideLength)
+    : SnakeSegment(Point(x, y), sideLength)
 {
 }
 
-SnakeSegment::SnakeSegment(Point point, int radius)
+SnakeSegment::SnakeSegment(Point point, int sideLength)
     : m_point(point)
-    , m_radius(radius)
+    , m_sideLength(sideLength)
 {
 }
 

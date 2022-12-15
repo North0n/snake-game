@@ -7,9 +7,9 @@
 class Snake
 {
 public:
-    Snake(Point point, int headRadius, int bodyRadius);
+    Snake(Point point, int headSideLength, int bodySideLength);
 
-    Snake(int x, int y, int headRadius, int bodyRadius);
+    Snake(int x, int y, int headSideLength, int bodySideLength);
 
     void moveOn(Vector vector);
 
@@ -19,13 +19,15 @@ public:
 
     [[nodiscard]] Point position() const { return m_head.position(); }
 
-    [[nodiscard]] int headRadius() const { return m_head.radius(); }
+    [[nodiscard]] const std::vector<SnakeSegment>& body() const { return m_body; }
 
-    [[nodiscard]] int bodyRadius() const { return m_bodyRadius; }
+    [[nodiscard]] int headSideLength() const { return m_head.sideLength(); }
+
+    [[nodiscard]] int bodySideLength() const { return m_bodySideLength; }
 
 private:
     SnakeSegment m_head;
     std::vector<SnakeSegment> m_body;
 
-    int m_bodyRadius;
+    int m_bodySideLength;
 };
