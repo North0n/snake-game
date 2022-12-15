@@ -19,6 +19,7 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             m_apple = std::make_unique<Apple>(generateApplePosition(), CellSize);
         }
         m_snake->moveOn(m_snakeDirection * CellSize);
+        m_movedInDirection = true;
         InvalidateRect(m_hwnd, nullptr, TRUE);
         return 0;
     }
@@ -38,8 +39,9 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             direction = {1, 0};
             break;
         }
-        if (direction != Vector{} && direction != -m_snakeDirection) {
+        if (direction != Vector{} && direction != -m_snakeDirection && m_movedInDirection) {
             m_snakeDirection = direction;
+            m_movedInDirection = false;
         }
         return 0;
     }

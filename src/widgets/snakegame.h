@@ -35,6 +35,7 @@ private:
     int m_windowHeight;
 
     Vector m_snakeDirection{1, 0};
+    bool m_movedInDirection{false};
 
     std::unique_ptr<Snake> m_snake;
     std::unique_ptr<Apple> m_apple;
