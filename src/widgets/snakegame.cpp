@@ -95,9 +95,9 @@ Point SnakeGame::generateApplePosition() const
 {
     Point point{};
     do {
-        point.x = m_distribution(m_random) % (m_windowWidth - 2 * CellSize) + CellSize;
-        point.y = m_distribution(m_random) % (m_windowHeight - 2 * CellSize) + CellSize;
+        point.x = m_gridAligner.toCellCoords(m_distribution(m_random) % (m_windowWidth - 2 * CellSize) + CellSize);
+        point.y = m_gridAligner.toCellCoords(m_distribution(m_random) % (m_windowHeight - 2 * CellSize) + CellSize);
     } while (m_snake->contains(point));
 
-    return m_gridAligner.toCellCoords(point);
+    return point;
 }
