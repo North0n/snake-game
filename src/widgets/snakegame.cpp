@@ -17,6 +17,11 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         if (m_apple->position().isBetween(m_snake->position(), nextPoint)) {
             m_snake->appendSegment();
             m_apple = std::make_unique<Apple>(generateApplePosition(), CellSize);
+            if (m_snakeGameTimerInterval > MinSnakeGameTimerInterval) {
+                m_snakeGameTimerInterval -= SnakeGameTimerIntervalStep;
+            }
+            KillTimer(m_hwnd, SnakeGameTimerId);
+            SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval, nullptr);
         }
         m_snake->moveOn(m_snakeDirection * CellSize);
         m_movedInDirection = true;
@@ -59,7 +64,7 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
                                           HeadSideLength, CellSize);
         m_apple = std::make_unique<Apple>(generateApplePosition(), CellSize);
 
-        SetTimer(m_hwnd, SnakeGameTimerId, SnakeGameTimerInterval, nullptr);
+        SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval, nullptr);
         return 0;
     }
     case WM_PAINT: {
