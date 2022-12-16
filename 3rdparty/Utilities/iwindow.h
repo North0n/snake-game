@@ -35,6 +35,7 @@ public:
             int width = CW_USEDEFAULT,
             int height = CW_USEDEFAULT,
             HWND hWndParent = nullptr,
+            HMENU hMenu = nullptr,
             HBRUSH hbrBackground = nullptr)
     {
         WNDCLASS wc{
@@ -45,7 +46,7 @@ public:
 
         RegisterClass(&wc);
         m_hwnd = CreateWindowEx(dwExStyle, className(), lpWindowName, dwStyle, x, y, width, height,
-                                hWndParent, nullptr, wc.hInstance, this);
+                                hWndParent, hMenu, wc.hInstance, this);
 
         return (m_hwnd ? TRUE : FALSE);
     }
