@@ -31,7 +31,7 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             if (res == IDYES) {
                 startGame();
             } else {
-                SendMessage(GetParent(m_hwnd), MainWindow::EndGameMessage, 0, 0);
+                SendMessage(GetParent(m_hwnd), MainWindow::ToMainMenu, 0, 0);
             }
             return 0;
         }
@@ -39,8 +39,8 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             m_snake->appendSegment();
             ++m_score;
             m_apple = std::make_unique<Apple>(generateApplePosition(), CellSize);
-            if (m_snakeGameTimerInterval > MinSnakeGameTimerInterval) {
-                m_snakeGameTimerInterval -= SnakeGameTimerIntervalStep;
+            if (m_snakeGameTimerInterval > DifficultyParams[static_cast<int>(m_difficulty)].minInterval) {
+                m_snakeGameTimerInterval -= DifficultyParams[static_cast<int>(m_difficulty)].intervalStep;
             }
             KillTimer(m_hwnd, SnakeGameTimerId);
             SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval, nullptr);
@@ -74,7 +74,7 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         return 0;
     }
-    case StartGameMessage: {
+    case StartGame: {
         startGame();
         return 0;
     }
@@ -139,9 +139,14 @@ void SnakeGame::startGame()
     m_snakeDirection = {0, 0};
     m_movedInDirection = true;
     m_score = 0;
-    m_snakeGameTimerInterval = InitialSnakeGameTimerInterval;
+    m_snakeGameTimerInterval = DifficultyParams[static_cast<int>(m_difficulty)].initialInterval;
 
     SetFocus(m_hwnd);
     SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval, nullptr);
     InvalidateRect(m_hwnd, nullptr, TRUE);
+}
+
+void SnakeGame::setDifficulty(Difficulty difficulty)
+{
+    m_difficulty = difficulty;
 }

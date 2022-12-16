@@ -6,6 +6,7 @@
 #include "services/gdipluspainter.h"
 #include "services/gridaligner.h"
 
+#include <array>
 #include <chrono>
 #include <memory>
 #include <random>
@@ -13,23 +14,47 @@
 class SnakeGame : public IWindow<SnakeGame>
 {
 public:
+    enum class Difficulty
+    {
+        Easy = 0,
+        Medium,
+        Hard
+    };
+
     [[nodiscard]] PCWSTR className() const override;
 
     LRESULT handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 
-    static constexpr inline UINT StartGameMessage = WM_USER + 0;
+    void setDifficulty(Difficulty difficulty);
+
+    [[nodiscard]] Difficulty difficulty() const { return m_difficulty; }
+
+    enum Message {
+        StartGame = WM_USER + 0
+    };
 
 private:
     static constexpr inline int HeadSideLength = 40;
     static constexpr inline int CellSize       = 40;
 
-    static constexpr inline int SnakeGameTimerId              = 1;
-    static constexpr inline int MinSnakeGameTimerInterval     = 32; // in milliseconds
-    static constexpr inline int InitialSnakeGameTimerInterval = 80; // in milliseconds
-    static constexpr inline int SnakeGameTimerIntervalStep    = 2; // in milliseconds
+    static constexpr inline int SnakeGameTimerId = 1;
 
     static inline std::mt19937 m_random{std::random_device{}()};
     static inline std::uniform_int_distribution<> m_distribution{};
+
+    // in milliseconds
+    struct TimerParams
+    {
+        int minInterval;
+        int initialInterval;
+        int intervalStep;
+    };
+
+    static constexpr std::array<TimerParams, 3> DifficultyParams{
+        TimerParams{100, 200, 5},
+        TimerParams{80,  150, 8},
+        TimerParams{32,  100, 10}
+    };
 
     [[nodiscard]] Point generateApplePosition() const;
 
@@ -42,8 +67,9 @@ private:
 
     Vector m_snakeDirection{1, 0};
     bool m_movedInDirection{true};
-    int m_snakeGameTimerInterval = InitialSnakeGameTimerInterval; // in milliseconds
+    int m_snakeGameTimerInterval;
     int m_score                  = 0;
+    Difficulty m_difficulty      = Difficulty::Easy;
 
     std::unique_ptr<Snake> m_snake;
     std::unique_ptr<Apple> m_apple;

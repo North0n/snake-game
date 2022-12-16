@@ -1,5 +1,6 @@
 #pragma once
 
+#include "changemode.h"
 #include "iwindow.h"
 #include "mainmenu.h"
 #include "snakegame.h"
@@ -21,16 +22,23 @@ public:
 
     LRESULT handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 
-    static constexpr inline int StartGameMessage = WM_USER + 0;
-    static constexpr inline int EndGameMessage = WM_USER + 1;
+    enum Message : UINT
+    {
+        StartGame = WM_USER + 0,
+        ChangeMode,
+        ChangeDifficulty,
+        ToMainMenu
+    };
 
 private:
-    static constexpr inline int SnakeGameId = 1;
-    static constexpr inline int MainMenuId  = 2;
+    static constexpr inline int SnakeGameId  = 1;
+    static constexpr inline int MainMenuId   = 2;
+    static constexpr inline int ChangeModeId = 3;
 
     int m_windowWidth;
     int m_windowHeight;
 
     std::unique_ptr<SnakeGame> m_snakeGame;
     std::unique_ptr<MainMenu> m_mainMenu;
+    std::unique_ptr<ChangeModeWidget> m_changeMode;
 };
