@@ -9,12 +9,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     ULONG_PTR gdiPlusToken;
     Gdiplus::GdiplusStartup(&gdiPlusToken, &gdiplusStartupInput, NULL);
 
+    RECT windowRect = { 0, 0, 1200, 600 };
+    AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW & ~WS_MAXIMIZEBOX, FALSE);
     MainWindow win;
-    if (!win.create(L"SnakeGameMainWindow", WS_OVERLAPPEDWINDOW)) {
+    if (!win.create(L"Змейка", WS_OVERLAPPEDWINDOW & ~WS_MAXIMIZEBOX & ~WS_THICKFRAME , 0,
+                    0, 0, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top)) {
         return 0;
     }
 
-    nCmdShow = SW_SHOWMAXIMIZED;
     ShowWindow(win.window(), nCmdShow);
     UpdateWindow(win.window());
 
