@@ -1,6 +1,8 @@
 #include "gdipluspainter.h"
 
 #include <algorithm>
+#include <string>
+#include <sstream>
 
 using namespace Gdiplus;
 
@@ -26,4 +28,13 @@ void GdiPlusPainter::draw(const Apple& apple)
 {
     m_graphics.DrawRectangle(&m_applePen, apple.position().x, apple.position().y, apple.sideLength(), apple.sideLength());
     m_graphics.FillRectangle(&m_appleBrush, apple.position().x, apple.position().y, apple.sideLength(), apple.sideLength());
+}
+
+void GdiPlusPainter::draw(int score)
+{
+    std::wstringstream ss;
+    ss << L"Ñ÷¸ò: " << score;
+    auto str = ss.str();
+    auto font = Font(L"Arial Rounded MT", 20);
+    m_graphics.DrawString(str.c_str(), str.length(), &font, PointF(0, 0), &m_textBrush);
 }

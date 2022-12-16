@@ -30,7 +30,7 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         HFONT hFont = CreateFont(48, 0, 0, 0, FW_BOLD,
                                  FALSE, FALSE, FALSE, RUSSIAN_CHARSET,
                                  OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-                                 DEFAULT_PITCH | FF_DONTCARE, L"Pixon");
+                                 DEFAULT_PITCH | FF_DONTCARE, L"Arial Rounded MT");
         EnumChildWindows(m_hwnd, (WNDENUMPROC)&MainWindow::setFont,
                          (LPARAM)hFont);
         return 0;

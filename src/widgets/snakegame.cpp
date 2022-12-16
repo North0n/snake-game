@@ -26,6 +26,7 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         if (m_apple->position() == nextPoint) {
             m_snake->appendSegment();
+            ++m_score;
             m_apple = std::make_unique<Apple>(generateApplePosition(), CellSize);
             if (m_snakeGameTimerInterval > MinSnakeGameTimerInterval) {
                 m_snakeGameTimerInterval -= SnakeGameTimerIntervalStep;
@@ -87,6 +88,7 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         m_painter = std::make_unique<GdiPlusPainter>(graphicsBack);
         m_painter->draw(*m_snake);
         m_painter->draw(*m_apple);
+        m_painter->draw(m_score);
         m_painter = nullptr;
         graphics.DrawImage(&bitmap, 0, 0, 0, 0, ps.rcPaint.right - ps.rcPaint.left,
                            ps.rcPaint.bottom - ps.rcPaint.top, Gdiplus::UnitPixel);
@@ -125,5 +127,7 @@ void SnakeGame::startGame()
 
     m_snakeDirection = {0, 0};
     m_movedInDirection = true;
+    m_score = 0;
+    m_snakeGameTimerInterval = InitialSnakeGameTimerInterval;
     SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval, nullptr);
 }
