@@ -1,5 +1,7 @@
 #include "mainmenu.h"
 
+#include "mainwindow.h"
+
 PCWSTR MainMenu::className() const
 {
     return L"Main Menu Window Class";
@@ -49,6 +51,17 @@ LRESULT MainMenu::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             DrawText(item->hDC, lpBuff, len, &item->rcItem, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
             delete[] lpBuff;
         }
+        }
+        return 0;
+    }
+    case WM_COMMAND: {
+        switch (LOWORD(wParam)) {
+        case PlayButtonId:
+            SendMessage(GetParent(m_hwnd), MainWindow::StartGameMessage, 0, 0);
+            break;
+        case ExitButtonId:
+            SendMessage(GetParent(m_hwnd), WM_CLOSE, 0, 0);
+            break;
         }
         return 0;
     }

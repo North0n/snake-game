@@ -20,10 +20,9 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         GetClientRect(m_hwnd, &rc);
         m_windowWidth  = rc.right - rc.left;
         m_windowHeight = rc.bottom - rc.top;
-//        m_snakeGame->create(L"Snake Game", WS_CHILD | WS_VISIBLE, 0,
-//                            0, 0, 1200, 600,
-//                            m_hwnd, (HMENU)SnakeGameId, (HBRUSH)(COLOR_BTNFACE + 1));
-//        SetFocus(m_snakeGame->window());
+        m_snakeGame->create(L"Snake Game", WS_CHILD, 0, // is hidden initially
+                            0, 0, 1200, 600,
+                            m_hwnd, (HMENU)SnakeGameId, (HBRUSH)(COLOR_BTNFACE + 1));
         m_mainMenu->create(L"Main Menu", WS_CHILD | WS_VISIBLE, 0,
                            0, 0, m_windowWidth, m_windowHeight,
                            m_hwnd, (HMENU)MainMenuId, (HBRUSH)(COLOR_WINDOW + 1));
@@ -43,6 +42,12 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         Gdiplus::Graphics graphics(hdc);
         EndPaint(m_hwnd, &ps);
         return 0;
+    }
+    case StartGameMessage: {
+        ShowWindow(m_mainMenu->window(), SW_HIDE);
+        ShowWindow(m_snakeGame->window(), SW_SHOW);
+        SetFocus(m_snakeGame->window());
+        SendMessage(m_snakeGame->window(), SnakeGame::StartGameMessage, 0, 0);
     }
     case WM_ERASEBKGND:
         return TRUE;

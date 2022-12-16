@@ -17,6 +17,8 @@ public:
 
     LRESULT handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 
+    static constexpr inline UINT StartGameMessage = WM_USER + 0;
+
 private:
     static constexpr inline int HeadSideLength = 40;
     static constexpr inline int CellSize       = 40;
@@ -30,13 +32,15 @@ private:
 
     [[nodiscard]] Point generateApplePosition() const;
 
+    void startGame();
+
     GridAligner m_gridAligner{CellSize};
 
     int m_windowWidth;
     int m_windowHeight;
 
     Vector m_snakeDirection{1, 0};
-    bool m_movedInDirection{false};
+    bool m_movedInDirection{true};
     int m_snakeGameTimerInterval = 80; // in milliseconds
 
     std::unique_ptr<Snake> m_snake;

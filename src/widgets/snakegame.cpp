@@ -13,6 +13,9 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         return 0;
     }
     case WM_TIMER: {
+        if (m_snakeDirection == Vector{0, 0}) {
+            return 0;
+        }
         auto nextPoint = m_gridAligner.toCellCoords(m_snake->position() + m_snakeDirection * CellSize);
         if (m_snake->contains(nextPoint) ||
             nextPoint.x < 0|| nextPoint.x >= m_windowWidth ||
@@ -50,11 +53,17 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         case VK_RIGHT:
             direction = {1, 0};
             break;
+        default:
+            return 0;
         }
-        if (direction != Vector{} && direction != -m_snakeDirection && m_movedInDirection) {
+        if (direction != -m_snakeDirection && m_movedInDirection) {
             m_snakeDirection = direction;
             m_movedInDirection = false;
         }
+        return 0;
+    }
+    case StartGameMessage: {
+        startGame();
         return 0;
     }
     case WM_CREATE: {
@@ -65,13 +74,6 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         GetWindowRect(m_hwnd, &rect);
         m_windowWidth  = rect.right - rect.left;
         m_windowHeight = rect.bottom - rect.top;
-
-        m_snake = std::make_unique<Snake>(Point(m_gridAligner.toCellCoords(m_windowWidth / 2),
-                                                m_gridAligner.toCellCoords(m_windowHeight / 2)),
-                                          HeadSideLength, CellSize);
-        m_apple = std::make_unique<Apple>(generateApplePosition(), CellSize);
-
-        SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval, nullptr);
         return 0;
     }
     case WM_PAINT: {
@@ -112,4 +114,16 @@ Point SnakeGame::generateApplePosition() const
     } while (m_snake->contains(point));
 
     return point;
+}
+
+void SnakeGame::startGame()
+{
+    m_snake = std::make_unique<Snake>(Point(m_gridAligner.toCellCoords(m_windowWidth / 2),
+                                            m_gridAligner.toCellCoords(m_windowHeight / 2)),
+                                      HeadSideLength, CellSize);
+    m_apple = std::make_unique<Apple>(generateApplePosition(), CellSize);
+
+    m_snakeDirection = {0, 0};
+    m_movedInDirection = true;
+    SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval, nullptr);
 }
