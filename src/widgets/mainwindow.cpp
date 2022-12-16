@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 
+#include "entities/imagecontainer.h"
+
 MainWindow::MainWindow()
     : IWindow<MainWindow>()
     , m_snakeGame(std::make_unique<SnakeGame>())
@@ -15,8 +17,11 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg) {
     case WM_CREATE: {
-        RECT rect;
-        GetWindowRect(m_hwnd, &rect);
+//        pBitmap = new ImageContainer;
+//        if (!pBitmap->load(L"BabulehImage", L"Image")) {
+//            MessageBox(m_hwnd, L"Failed to load babuleh image", L"Error", MB_OK);
+//        }
+
         m_snakeGame->create(L"Snake Game", WS_CHILD | WS_VISIBLE, 0,
                             10, 10, 1200, 600,
                             m_hwnd, (HBRUSH)(COLOR_BTNFACE + 1));
@@ -29,10 +34,13 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         PAINTSTRUCT ps;
         auto hdc = BeginPaint(m_hwnd, &ps);
         FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_BTNSHADOW + 1));
+        Gdiplus::Graphics graphics(hdc);
+//        graphics.DrawImage(*pBitmap, 0, 0);
         EndPaint(m_hwnd, &ps);
         return 0;
     }
     case WM_DESTROY:
+//        delete pBitmap;
         PostQuitMessage(0);
         return 0;
     }

@@ -11,6 +11,8 @@ name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
 processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
 
+class ImageContainer;
+
 class MainWindow : public IWindow<MainWindow>
 {
 public:
@@ -22,4 +24,6 @@ public:
 
 private:
     std::unique_ptr<SnakeGame> m_snakeGame;
+
+    ImageContainer* pBitmap;
 };
