@@ -22,6 +22,7 @@ public:
     LRESULT handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 
     static constexpr inline int StartGameMessage = WM_USER + 0;
+    static constexpr inline int EndGameMessage = WM_USER + 1;
 
 private:
     static constexpr inline int SnakeGameId = 1;

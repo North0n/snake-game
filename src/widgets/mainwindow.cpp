@@ -46,8 +46,13 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     case StartGameMessage: {
         ShowWindow(m_mainMenu->window(), SW_HIDE);
         ShowWindow(m_snakeGame->window(), SW_SHOW);
-        SetFocus(m_snakeGame->window());
         SendMessage(m_snakeGame->window(), SnakeGame::StartGameMessage, 0, 0);
+        return 0;
+    }
+    case EndGameMessage: {
+        ShowWindow(m_snakeGame->window(), SW_HIDE);
+        ShowWindow(m_mainMenu->window(), SW_SHOW);
+        return 0;
     }
     case WM_ERASEBKGND:
         return TRUE;

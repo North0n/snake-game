@@ -1,5 +1,8 @@
 #include "snakegame.h"
 
+#include <sstream>
+#include "mainwindow.h"
+
 PCWSTR SnakeGame::className() const
 {
     return L"Snake Game Window Class";
@@ -21,7 +24,15 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             nextPoint.x < 0|| nextPoint.x >= m_windowWidth ||
             nextPoint.y < 0 || nextPoint.y >= m_windowHeight) {
             KillTimer(m_hwnd, SnakeGameTimerId);
-            MessageBox(m_hwnd, L"Game Over", L"Snake Game", MB_OK | MB_ICONEXCLAMATION);
+
+            std::wstringstream ss;
+            ss << L"Игра окончена! Ваш счёт: " << m_score << L". Заново?";
+            auto res = MessageBox(m_hwnd, ss.str().c_str(), L"Игра окончена", MB_OK | MB_YESNO);
+            if (res == IDYES) {
+                startGame();
+            } else {
+                SendMessage(GetParent(m_hwnd), MainWindow::EndGameMessage, 0, 0);
+            }
             return 0;
         }
         if (m_apple->position() == nextPoint) {
@@ -129,5 +140,8 @@ void SnakeGame::startGame()
     m_movedInDirection = true;
     m_score = 0;
     m_snakeGameTimerInterval = InitialSnakeGameTimerInterval;
+
+    SetFocus(m_hwnd);
     SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval, nullptr);
+    InvalidateRect(m_hwnd, nullptr, TRUE);
 }
