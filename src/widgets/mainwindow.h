@@ -1,6 +1,7 @@
 #pragma once
 
 #include "iwindow.h"
+#include "mainmenu.h"
 #include "snakegame.h"
 
 #include <memory>
@@ -10,8 +11,6 @@
 name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
 processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
-
-class ImageContainer;
 
 class MainWindow : public IWindow<MainWindow>
 {
@@ -23,7 +22,12 @@ public:
     LRESULT handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 
 private:
-    std::unique_ptr<SnakeGame> m_snakeGame;
+    static constexpr inline int SnakeGameId = 1;
+    static constexpr inline int MainMenuId  = 2;
 
-    ImageContainer* pBitmap;
+    int m_windowWidth;
+    int m_windowHeight;
+
+    std::unique_ptr<SnakeGame> m_snakeGame;
+    std::unique_ptr<MainMenu> m_mainMenu;
 };

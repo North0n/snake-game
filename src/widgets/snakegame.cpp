@@ -2,7 +2,7 @@
 
 PCWSTR SnakeGame::className() const
 {
-    return L"Snake Game";
+    return L"Snake Game Window Class";
 }
 
 LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
