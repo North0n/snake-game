@@ -36,13 +36,15 @@ public:
             int height = CW_USEDEFAULT,
             HWND hWndParent = nullptr,
             HMENU hMenu = nullptr,
-            HBRUSH hbrBackground = nullptr)
+            HBRUSH hbrBackground = nullptr,
+            LPCWSTR lpIconName = nullptr)
     {
         WNDCLASS wc{
-                .lpfnWndProc   = DerivedWindow::windowProc,
-                .hInstance     = GetModuleHandle(nullptr),
-                .hbrBackground = hbrBackground,
-                .lpszClassName = className()};
+            .lpfnWndProc   = DerivedWindow::windowProc,
+            .hInstance     = GetModuleHandle(nullptr),
+            .hIcon         = LoadIcon(GetModuleHandle(nullptr), lpIconName),
+            .hbrBackground = hbrBackground,
+            .lpszClassName = className()};
 
         RegisterClass(&wc);
         m_hwnd = CreateWindowEx(dwExStyle, className(), lpWindowName, dwStyle, x, y, width, height,

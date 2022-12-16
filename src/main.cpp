@@ -13,7 +13,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW & ~WS_MAXIMIZEBOX, FALSE);
     MainWindow win;
     if (!win.create(L"Змейка", WS_OVERLAPPEDWINDOW & ~WS_MAXIMIZEBOX & ~WS_THICKFRAME , 0,
-                    100, 100, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top)) {
+                    100, 100, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top,
+                    nullptr, nullptr, nullptr, L"AppIcon")) {
         return 0;
     }
 
