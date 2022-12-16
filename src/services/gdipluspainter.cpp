@@ -38,3 +38,11 @@ void GdiPlusPainter::draw(int score)
     auto font = Font(L"Arial Rounded MT", 20);
     m_graphics.DrawString(str.c_str(), str.length(), &font, PointF(0, 0), &m_textBrush);
 }
+
+void GdiPlusPainter::draw(const std::vector<::Point>& obstacles)
+{
+    std::for_each(obstacles.begin(), obstacles.end(), [this](const auto& obstacle) {
+        m_graphics.DrawRectangle(&m_obstaclePen, obstacle.x, obstacle.y, 40, 40);
+        m_graphics.FillRectangle(&m_obstacleBrush, obstacle.x, obstacle.y, 40, 40);
+    });
+}

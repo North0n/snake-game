@@ -10,6 +10,7 @@
 #include <chrono>
 #include <memory>
 #include <random>
+#include <vector>
 
 class SnakeGame : public IWindow<SnakeGame>
 {
@@ -29,9 +30,11 @@ public:
 
     [[nodiscard]] Difficulty difficulty() const { return m_difficulty; }
 
-    enum Message {
-        StartGame = WM_USER + 0
-    };
+    void setObstacles(const std::vector<Point>& obstacles) { m_obstacles = obstacles; }
+
+    [[nodiscard]] const std::vector<Point>& obstacles() const { return m_obstacles; }
+
+    void startGame();
 
 private:
     static constexpr inline int HeadSideLength = 40;
@@ -52,13 +55,12 @@ private:
 
     static constexpr std::array<TimerParams, 3> DifficultyParams{
         TimerParams{100, 200, 5},
-        TimerParams{80,  150, 8},
-        TimerParams{32,  100, 10}
-    };
+        TimerParams{80, 150, 8},
+        TimerParams{32, 100, 10}};
 
     [[nodiscard]] Point generateApplePosition() const;
 
-    void startGame();
+    [[nodiscard]] bool bumpIntoObstacle(const Point& point) const;
 
     GridAligner m_gridAligner{CellSize};
 
@@ -68,8 +70,9 @@ private:
     Vector m_snakeDirection{1, 0};
     bool m_movedInDirection{true};
     int m_snakeGameTimerInterval;
-    int m_score                  = 0;
-    Difficulty m_difficulty      = Difficulty::Easy;
+    int m_score             = 0;
+    Difficulty m_difficulty = Difficulty::Easy;
+    std::vector<Point> m_obstacles;
 
     std::unique_ptr<Snake> m_snake;
     std::unique_ptr<Apple> m_apple;

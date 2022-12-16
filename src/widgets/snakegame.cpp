@@ -22,7 +22,8 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         auto nextPoint = m_gridAligner.toCellCoords(m_snake->position() + m_snakeDirection * CellSize);
         if (m_snake->contains(nextPoint) ||
             nextPoint.x < 0|| nextPoint.x >= m_windowWidth ||
-            nextPoint.y < 0 || nextPoint.y >= m_windowHeight) {
+            nextPoint.y < 0 || nextPoint.y >= m_windowHeight ||
+            bumpIntoObstacle(nextPoint)) {
             KillTimer(m_hwnd, SnakeGameTimerId);
 
             std::wstringstream ss;
@@ -74,10 +75,6 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         return 0;
     }
-    case StartGame: {
-        startGame();
-        return 0;
-    }
     case WM_CREATE: {
         EnumChildWindows(m_hwnd, (WNDENUMPROC)&SnakeGame::setFont,
                          (LPARAM)GetStockObject(DEFAULT_GUI_FONT));
@@ -100,6 +97,7 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         m_painter->draw(*m_snake);
         m_painter->draw(*m_apple);
         m_painter->draw(m_score);
+        m_painter->draw(m_obstacles);
         m_painter = nullptr;
         graphics.DrawImage(&bitmap, 0, 0, 0, 0, ps.rcPaint.right - ps.rcPaint.left,
                            ps.rcPaint.bottom - ps.rcPaint.top, Gdiplus::UnitPixel);
@@ -124,7 +122,7 @@ Point SnakeGame::generateApplePosition() const
     do {
         point.x = m_gridAligner.toCellCoords(m_distribution(m_random) % (m_windowWidth - 2 * CellSize) + CellSize);
         point.y = m_gridAligner.toCellCoords(m_distribution(m_random) % (m_windowHeight - 2 * CellSize) + CellSize);
-    } while (m_snake->contains(point));
+    } while (m_snake->contains(point) || bumpIntoObstacle(point));
 
     return point;
 }
@@ -149,4 +147,10 @@ void SnakeGame::startGame()
 void SnakeGame::setDifficulty(Difficulty difficulty)
 {
     m_difficulty = difficulty;
+}
+
+bool SnakeGame::bumpIntoObstacle(const Point& point) const
+{
+    return std::any_of(m_obstacles.begin(), m_obstacles.end(),
+                       [&point](const auto& obstacle) { return obstacle == point; });
 }

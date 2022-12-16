@@ -27,7 +27,8 @@ public:
         StartGame = WM_USER + 0,
         ChangeMode,
         ChangeDifficulty,
-        ToMainMenu
+        ToMainMenu,
+        SetObstacles
     };
 
 private:

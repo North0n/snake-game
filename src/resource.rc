@@ -1,2 +1,4 @@
-BabulehImage Image "resources/babuleh.png"
 AppIcon Icon "resources/snake.ico"
+Map1 Image "resources/maps/Map1.png"
+Map2 Image "resources/maps/Map2.png"
+Map3 Image "resources/maps/Map3.png"

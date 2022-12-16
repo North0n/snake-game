@@ -51,7 +51,7 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         ShowWindow(m_mainMenu->window(), SW_HIDE);
         ShowWindow(m_changeMode->window(), SW_HIDE);
         ShowWindow(m_snakeGame->window(), SW_SHOW);
-        SendMessage(m_snakeGame->window(), SnakeGame::StartGame, 0, 0);
+        m_snakeGame->startGame();
         return 0;
     }
     case ToMainMenu:{
@@ -69,6 +69,11 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
     case ChangeDifficulty: {
         m_snakeGame->setDifficulty(static_cast<SnakeGame::Difficulty>(wParam));
+        return 0;
+    }
+    case SetObstacles: {
+        auto obstacles = reinterpret_cast<std::vector<Point>*>(wParam);
+        m_snakeGame->setObstacles(*obstacles);
         return 0;
     }
     case WM_ERASEBKGND:
