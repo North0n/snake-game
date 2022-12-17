@@ -68,11 +68,6 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         ShowWindow(m_snakeGame->window(), SW_HIDE);
         ShowWindow(m_mainMenu->window(), SW_HIDE);
         ShowWindow(m_changeMode->window(), SW_SHOW);
-        m_changeMode->setDifficulty(m_snakeGame->difficulty());
-        return 0;
-    }
-    case ChangeDifficulty: {
-        m_snakeGame->setDifficulty(static_cast<SnakeGame::Difficulty>(wParam));
         return 0;
     }
     case SetObstacles: {

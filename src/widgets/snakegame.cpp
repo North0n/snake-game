@@ -1,7 +1,9 @@
 #include "snakegame.h"
 
-#include <sstream>
 #include "mainwindow.h"
+#include "services/settings.h"
+
+#include <sstream>
 
 PCWSTR SnakeGame::className() const
 {
@@ -40,8 +42,8 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             m_snake->appendSegment();
             ++m_score;
             m_apple = std::make_unique<Apple>(generateApplePosition(), CellSize);
-            if (m_snakeGameTimerInterval > DifficultyParams[static_cast<int>(m_difficulty)].minInterval) {
-                m_snakeGameTimerInterval -= DifficultyParams[static_cast<int>(m_difficulty)].intervalStep;
+            if (m_snakeGameTimerInterval > DifficultyParams[static_cast<int>(appSettings->difficulty())].minInterval) {
+                m_snakeGameTimerInterval -= DifficultyParams[static_cast<int>(appSettings->difficulty())].intervalStep;
             }
             KillTimer(m_hwnd, SnakeGameTimerId);
             SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval, nullptr);
@@ -137,16 +139,11 @@ void SnakeGame::startGame()
     m_snakeDirection = {0, 0};
     m_movedInDirection = true;
     m_score = 0;
-    m_snakeGameTimerInterval = DifficultyParams[static_cast<int>(m_difficulty)].initialInterval;
+    m_snakeGameTimerInterval = DifficultyParams[static_cast<int>(appSettings->difficulty())].initialInterval;
 
     SetFocus(m_hwnd);
     SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval, nullptr);
     InvalidateRect(m_hwnd, nullptr, TRUE);
-}
-
-void SnakeGame::setDifficulty(Difficulty difficulty)
-{
-    m_difficulty = difficulty;
 }
 
 bool SnakeGame::bumpIntoObstacle(const Point& point) const

@@ -1,7 +1,8 @@
 #include "changemode.h"
 
-#include "mainwindow.h"
 #include "entities/imagecontainer.h"
+#include "mainwindow.h"
+#include "services/settings.h"
 
 PCWSTR ChangeModeWidget::className() const
 {
@@ -75,7 +76,7 @@ LRESULT ChangeModeWidget::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         auto initialRegion = CreateRectRgn(0, 0, 0, 0);
         GetWindowRgn(item->hwndItem, initialRegion);
         auto color = RGB(41, 245, 92);
-        if (item->CtlID - 1 == static_cast<UINT>(m_difficulty) || item->CtlID - 5 == static_cast<UINT>(m_mapIndex)) {
+        if (item->CtlID - 1 == static_cast<UINT>(appSettings->difficulty()) || item->CtlID - 5 == static_cast<UINT>(appSettings->mapIndex())) {
             color = RGB(255, 0, 0);
         }
         auto brush = CreateSolidBrush(color);
@@ -119,8 +120,7 @@ LRESULT ChangeModeWidget::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         case MediumButtonId:
         case HardButtonId: {
             auto difficulty = LOWORD(wParam) - 1;
-            setDifficulty(static_cast<SnakeGame::Difficulty>(difficulty));
-            SendMessage(GetParent(m_hwnd), MainWindow::Message::ChangeDifficulty, difficulty, 0);
+            appSettings->set_difficulty(static_cast<SnakeGame::Difficulty>(difficulty));
             InvalidateRect(m_hwnd, nullptr, true);
             return 0;
         }
@@ -131,8 +131,8 @@ LRESULT ChangeModeWidget::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         case Map1ButtonId:
         case Map2ButtonId:
         case Map3ButtonId: {
-            m_mapIndex = LOWORD(wParam) - 5;
-            SendMessage(GetParent(m_hwnd), MainWindow::Message::SetObstacles, reinterpret_cast<WPARAM>(&MapsOfObstacles[m_mapIndex]), 0);
+            appSettings->set_mapIndex(LOWORD(wParam) - 5);
+            SendMessage(GetParent(m_hwnd), MainWindow::Message::SetObstacles, reinterpret_cast<WPARAM>(&MapsOfObstacles[appSettings->mapIndex()]), 0);
             InvalidateRect(m_hwnd, nullptr, true);
             return 0;
         }

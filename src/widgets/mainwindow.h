@@ -27,7 +27,6 @@ public:
     {
         StartGame = WM_USER + 0,
         ToChangeMode,
-        ChangeDifficulty,
         ToMainMenu,
         SetObstacles,
         ToRecords

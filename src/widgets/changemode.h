@@ -12,10 +12,6 @@ public:
 
     LRESULT handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 
-    void setDifficulty(SnakeGame::Difficulty difficulty) { m_difficulty = difficulty; }
-
-    [[nodiscard]] SnakeGame::Difficulty difficulty() const { return m_difficulty; }
-
 private:
     static constexpr inline int EasyButtonId   = 1;
     static constexpr inline int MediumButtonId = 2;
@@ -54,7 +50,4 @@ private:
     ImageContainer* m_map1Image;
     ImageContainer* m_map2Image;
     ImageContainer* m_map3Image;
-
-    int m_mapIndex = 0;
-    SnakeGame::Difficulty m_difficulty;
 };

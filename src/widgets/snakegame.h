@@ -26,10 +26,6 @@ public:
 
     LRESULT handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 
-    void setDifficulty(Difficulty difficulty);
-
-    [[nodiscard]] Difficulty difficulty() const { return m_difficulty; }
-
     void setObstacles(const std::vector<Point>& obstacles) { m_obstacles = obstacles; }
 
     [[nodiscard]] const std::vector<Point>& obstacles() const { return m_obstacles; }
@@ -71,7 +67,6 @@ private:
     bool m_movedInDirection{true};
     int m_snakeGameTimerInterval;
     int m_score             = 0;
-    Difficulty m_difficulty = Difficulty::Easy;
     std::vector<Point> m_obstacles;
 
     std::unique_ptr<Snake> m_snake;
