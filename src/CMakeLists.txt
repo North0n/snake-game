@@ -23,6 +23,6 @@ add_executable(${PROJECT_NAME} WIN32 ${SOURCES})
 
 target_sources(${PROJECT_NAME} PRIVATE resource.rc)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE utilities)
+target_link_libraries(${PROJECT_NAME} PRIVATE utilities nlohmann_json::json)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

@@ -8,6 +8,7 @@ project(3rdparty LANGUAGES CXX)
 ###############################################################################
 
 set(UTILITIES_SUBMODULE	   ON CACHE BOOL "" FORCE)
+set(JSON_SUBMODULE	       ON CACHE BOOL "" FORCE)
 
 ###############################################################################
 ## INCLUDING SUBDIRECTORIES
@@ -16,4 +17,8 @@ set(UTILITIES_SUBMODULE	   ON CACHE BOOL "" FORCE)
 
 if (UTILITIES_SUBMODULE)
     add_subdirectory(Utilities)
+endif()
+
+if (JSON_SUBMODULE)
+    add_subdirectory(Json)
 endif()
