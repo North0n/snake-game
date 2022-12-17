@@ -56,12 +56,13 @@ private:
     int m_windowWidth;
     int m_windowHeight;
 
-    bool m_isGamePaused = false;
+    bool m_isGamePaused  = false;
+    bool m_isAccelerated = false;
 
     Vector m_snakeDirection{1, 0};
     bool m_movedInDirection{true};
     int m_snakeGameTimerInterval;
-    int m_score             = 0;
+    int m_score = 0;
     std::vector<Point> m_obstacles;
 
     std::unique_ptr<Snake> m_snake;

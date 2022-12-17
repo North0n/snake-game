@@ -45,7 +45,11 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             m_apple = std::make_unique<Apple>(generateApplePosition(), CellSize);
             if (m_snakeGameTimerInterval > DifficultyParams[static_cast<int>(appSettings->difficulty())].minInterval) {
                 m_snakeGameTimerInterval -= DifficultyParams[static_cast<int>(appSettings->difficulty())].intervalStep;
-                SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval, nullptr);
+                if (m_isAccelerated) {
+                    SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval / 2, nullptr);
+                } else {
+                    SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval, nullptr);
+                }
             }
         }
         m_snake->moveOn(m_snakeDirection * CellSize);
@@ -80,6 +84,15 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             m_isGamePaused = !m_isGamePaused;
             InvalidateRect(m_hwnd, nullptr, TRUE);
             return 0;
+        case VK_SHIFT: {
+            if (m_isAccelerated) {
+                SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval, nullptr);
+            } else {
+                SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval / 2, nullptr);
+            }
+            m_isAccelerated = !m_isAccelerated;
+            return 0;
+        }
         case VK_ESCAPE: {
             KillTimer(m_hwnd, SnakeGameTimerId);
             auto res = MessageBox(m_hwnd, L"Вы уверены, что хотите выйти в главное меню?", L"Выход в главное меню", MB_OK | MB_YESNO);
@@ -166,6 +179,7 @@ void SnakeGame::startGame()
     m_movedInDirection = true;
     m_score = 0;
     m_isGamePaused = false;
+    m_isAccelerated = false;
     m_snakeGameTimerInterval = DifficultyParams[static_cast<int>(appSettings->difficulty())].initialInterval;
 
     SetFocus(m_hwnd);
