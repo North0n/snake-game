@@ -45,7 +45,7 @@ private:
     static constexpr std::array<TimerParams, 3> DifficultyParams{
         TimerParams{100, 200, 5},
         TimerParams{80, 150, 8},
-        TimerParams{32, 100, 10}};
+        TimerParams{48, 100, 10}};
 
     [[nodiscard]] Point generateApplePosition() const;
 
@@ -55,6 +55,8 @@ private:
 
     int m_windowWidth;
     int m_windowHeight;
+
+    bool m_isGamePaused = false;
 
     Vector m_snakeDirection{1, 0};
     bool m_movedInDirection{true};

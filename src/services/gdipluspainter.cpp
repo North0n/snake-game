@@ -1,7 +1,6 @@
 #include "gdipluspainter.h"
 
 #include <algorithm>
-#include <sstream>
 #include <string>
 
 using namespace Gdiplus;
@@ -32,11 +31,8 @@ void GdiPlusPainter::draw(const Apple& apple)
 
 void GdiPlusPainter::draw(int score)
 {
-    std::wstringstream ss;
-    ss << L"—˜∏Ú: " << score;
-    auto str  = ss.str();
     auto font = Font(L"Arial Rounded MT", 20);
-    m_graphics.DrawString(str.c_str(), str.length(), &font, PointF(0, 0), &m_textBrush);
+    m_graphics.DrawString((L"—˜∏Ú: " + std::to_wstring(score)).c_str(), -1, &font, PointF(0, 0), &m_textBrush);
 }
 
 void GdiPlusPainter::draw(const std::vector<::Point>& obstacles)
@@ -192,4 +188,16 @@ void GdiPlusPainter::drawRoundRect(Graphics* pGraphics, Rect r, Color color, int
 
     // restore page unit
     pGraphics->SetPageUnit((Unit)oldPageUnit);
+}
+
+void GdiPlusPainter::drawPause(int width, int height)
+{
+    Gdiplus::Font font(L"Arial Rounded MT", 50, FontStyleBold, UnitPixel);
+    SolidBrush brush(Color::Black);
+
+    StringFormat format;
+    format.SetAlignment(StringAlignmentCenter);
+    format.SetLineAlignment(StringAlignmentCenter);
+
+    m_graphics.DrawString(L"œ‡ÛÁ‡", -1, &font, PointF(width / 2.0, height / 2.0), &format, &brush);
 }

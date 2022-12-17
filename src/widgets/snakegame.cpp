@@ -69,10 +69,22 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         case VK_RIGHT:
             direction = {1, 0};
             break;
+        case VK_SPACE:
+            if (m_snakeDirection == Vector{}) {
+                return 0;
+            }
+            if (m_isGamePaused) {
+                SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval, nullptr);
+            } else {
+                KillTimer(m_hwnd, SnakeGameTimerId);
+            }
+            m_isGamePaused = !m_isGamePaused;
+            InvalidateRect(m_hwnd, nullptr, TRUE);
+            return 0;
         default:
             return 0;
         }
-        if (direction != -m_snakeDirection && m_movedInDirection) {
+        if (direction != -m_snakeDirection && m_movedInDirection && !m_isGamePaused) {
             m_snakeDirection = direction;
             m_movedInDirection = false;
         }
@@ -101,6 +113,9 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         m_painter->draw(*m_apple);
         m_painter->draw(m_score);
         m_painter->draw(m_obstacles);
+        if (m_isGamePaused) {
+            m_painter->drawPause(m_windowWidth, m_windowHeight);
+        }
         m_painter = nullptr;
         graphics.DrawImage(&bitmap, 0, 0, 0, 0, ps.rcPaint.right - ps.rcPaint.left,
                            ps.rcPaint.bottom - ps.rcPaint.top, Gdiplus::UnitPixel);
@@ -140,6 +155,7 @@ void SnakeGame::startGame()
     m_snakeDirection = {0, 0};
     m_movedInDirection = true;
     m_score = 0;
+    m_isGamePaused = false;
     m_snakeGameTimerInterval = DifficultyParams[static_cast<int>(appSettings->difficulty())].initialInterval;
 
     SetFocus(m_hwnd);

@@ -23,6 +23,7 @@ public:
               const std::optional<Difficulty>& filterDifficulty,
               const std::optional<int>& filterMapIndex,
               int maxRecordsCount = -1);
+    void drawPause(int width, int height);
 
 private:
     static void drawRoundRect(Gdiplus::Graphics* pGraphics, Gdiplus::Rect r,  Gdiplus::Color color, int radius, int width);
