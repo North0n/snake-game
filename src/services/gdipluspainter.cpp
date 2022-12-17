@@ -79,7 +79,10 @@ void GdiPlusPainter::draw(const std::list<Record>& records,
         maxRecordsCount = records.size();
 
     // Draw header
+    SolidBrush brush2(Color::LightGray);
+    m_graphics.FillRectangle(&brush2, 250, 25, 100, 32);
     m_graphics.DrawString(L"Номер", -1, font, PointF(250, 25), &brush);
+    m_graphics.FillRectangle(&brush2, 550, 25, 100, 32);
     m_graphics.DrawString(L"Счёт", -1, font, PointF(550, 25), &brush);
 
     // Draw records
