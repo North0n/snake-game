@@ -84,9 +84,10 @@ LRESULT MainMenu::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             break;
         case NameEditId: {
             if (HIWORD(wParam) == EN_CHANGE) {
-                int len     = GetWindowTextLength(m_nameEdit);
+                auto edit   = GetDlgItem(m_hwnd, NameEditId);
+                int len     = GetWindowTextLength(edit);
                 auto lpBuff = new wchar_t[len + 1];
-                GetWindowText(m_nameEdit, lpBuff, len + 1);
+                GetWindowText(edit, lpBuff, len + 1);
                 appSettings->set_playerName(Settings::toUtf8(lpBuff));
                 delete[] lpBuff;
             }
