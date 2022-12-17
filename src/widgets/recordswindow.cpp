@@ -133,6 +133,11 @@ LRESULT RecordsWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             return 0;
         }
         case ClearButtonId: {
+            auto res = MessageBox(m_hwnd, L"Вы действительно хотите очистить таблицу рекордов?",
+                                  L"Подтверждение", MB_YESNO);
+            if (res != IDYES) {
+                return 0;
+            }
             clearRecords();
             m_filterDifficulty = std::nullopt;
             m_filterMapIndex = std::nullopt;
