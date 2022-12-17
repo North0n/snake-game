@@ -88,20 +88,21 @@ LRESULT RecordsWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         PAINTSTRUCT ps;
         auto hdc = BeginPaint(m_hwnd, &ps);
         Gdiplus::Graphics graphics(hdc);
-        Gdiplus::Bitmap bitmap(ps.rcPaint.right - ps.rcPaint.left,
-                               ps.rcPaint.bottom - ps.rcPaint.top, &graphics);
+        Gdiplus::Bitmap bitmap(ps.rcPaint.right,ps.rcPaint.bottom, &graphics);
         Gdiplus::Graphics graphicsBack(&bitmap);
         graphicsBack.Clear(Gdiplus::Color::White);
 
         m_painter = std::make_unique<GdiPlusPainter>(graphicsBack);
         m_painter->draw(m_records, m_filterDifficulty, m_filterMapIndex, RecordsOnPage);
         m_painter = nullptr;
-        graphics.DrawImage(&bitmap, 0, 0, 0, 0, ps.rcPaint.right - ps.rcPaint.left,
-                           ps.rcPaint.bottom - ps.rcPaint.top, Gdiplus::UnitPixel);
+        graphics.DrawImage(&bitmap, 0, 0, 0, 0,
+                           ps.rcPaint.right, ps.rcPaint.bottom, Gdiplus::UnitPixel);
 
         EndPaint(m_hwnd, &ps);
         return 0;
     }
+    case WM_ERASEBKGND:
+        return true;
     case WM_COMMAND: {
         switch (LOWORD(wParam)) {
         case MainMenuButtonId: {
@@ -116,7 +117,8 @@ LRESULT RecordsWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
                 } else {
                     m_filterDifficulty = static_cast<Difficulty>(index - 1);
                 }
-                InvalidateRect(m_hwnd, nullptr, true);
+                RECT rc{250, 57, 950, 475};
+                InvalidateRect(m_hwnd, &rc, true);
             }
             return 0;
         }
@@ -128,7 +130,8 @@ LRESULT RecordsWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
                 } else {
                     m_filterMapIndex = index - 1;
                 }
-                InvalidateRect(m_hwnd, nullptr, true);
+                RECT rc{250, 57, 950, 475};
+                InvalidateRect(m_hwnd, &rc, true);
             }
             return 0;
         }
@@ -156,11 +159,31 @@ LRESULT RecordsWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 void RecordsWindow::addRecord(const Record& record)
 {
-    auto it = std::find_if(m_records.begin(), m_records.end(), [&record](const Record& r) {
-        return r.score > record.score;
-    });
-    m_records.insert(it, record);
+    auto elementGreater = m_records.end();
+    auto sameElement = m_records.end();
+    for (auto it = m_records.begin(); it != m_records.end(); ++it) {
+        if (it->score > record.score && elementGreater == m_records.end()) {
+            elementGreater = it;
+        }
+        if (it->difficulty == record.difficulty && it->mapIndex == record.mapIndex && it->name == record.name) {
+            sameElement = it;
+        }
+    }
 
+    auto shouldSave = true;
+    if (sameElement != m_records.end()) {
+        if (sameElement->score < record.score) {
+            sameElement->score = record.score;
+        } else {
+            shouldSave = false;
+        }
+    } else {
+        m_records.insert(elementGreater, record);
+    }
+
+    if (!shouldSave) {
+        return;
+    }
     nlohmann::json json;
     std::transform(m_records.begin(), m_records.end(), std::back_inserter(json), [](const Record& r) {
         return nlohmann::json{
