@@ -21,7 +21,7 @@ public:                                          \
     {                                            \
         m_json[#name] = value;                   \
         std::ofstream file(s_fileName);          \
-        file << m_json;                          \
+        file << std::setw(4) << m_json;          \
     }
 
 class Settings
