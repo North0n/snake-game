@@ -1,10 +1,13 @@
 #pragma once
 
 #include "entities/apple.h"
+#include "entities/gametypes.h"
 #include "entities/snake.h"
 
 #include <Windows.h>
 #include <gdiplus.h>
+#include <list>
+#include <optional>
 #pragma comment(lib, "Gdiplus.lib")
 
 class GdiPlusPainter
@@ -16,8 +19,15 @@ public:
     void draw(const Apple& apple);
     void draw(const std::vector<Point>& obstacles);
     void draw(int score);
+    void draw(const std::list<Record>& records,
+              const std::optional<Difficulty>& filterDifficulty,
+              const std::optional<int>& filterMapIndex,
+              int maxRecordsCount = -1);
 
 private:
+    static void drawRoundRect(Gdiplus::Graphics* pGraphics, Gdiplus::Rect r,  Gdiplus::Color color, int radius, int width);
+    static void getRoundRectPath(Gdiplus::GraphicsPath *pPath, Gdiplus::Rect r, int dia);
+
     Gdiplus::Graphics& m_graphics;
 
     Gdiplus::Pen m_snakePen{Gdiplus::Color::Black, 2.0};

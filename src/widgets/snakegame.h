@@ -15,13 +15,6 @@
 class SnakeGame : public IWindow<SnakeGame>
 {
 public:
-    enum class Difficulty
-    {
-        Easy = 0,
-        Medium,
-        Hard
-    };
-
     [[nodiscard]] PCWSTR className() const override;
 
     LRESULT handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) override;

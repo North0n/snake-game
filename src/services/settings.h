@@ -1,5 +1,6 @@
 #pragma once
 
+#include "entities/gametypes.h"
 #include "json.hpp"
 #include "singleton.h"
 #include "widgets/snakegame.h"
@@ -27,7 +28,7 @@ public:                                          \
 class Settings
 {
     PROPERTY(int, mapIndex)
-    PROPERTY(SnakeGame::Difficulty, difficulty)
+    PROPERTY(Difficulty, difficulty)
     PROPERTY(std::string, playerName)
 
 public:

@@ -39,6 +39,8 @@ private:
     static constexpr inline int ChangeModeId = 3;
     static constexpr inline int RecordsId    = 4;
 
+    void showWindow(HWND window);
+
     int m_windowWidth;
     int m_windowHeight;
 

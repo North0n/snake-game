@@ -42,7 +42,7 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
                             OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
                             DEFAULT_PITCH | FF_DONTCARE, L"Arial Rounded MT");
 
-        m_smallFont = CreateFont(20, 0, 0, 0, FW_BOLD,
+        m_smallFont = CreateFont(24, 0, 0, 0, FW_BOLD,
                                  FALSE, FALSE, FALSE, RUSSIAN_CHARSET,
                                  OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
                                  DEFAULT_PITCH | FF_DONTCARE, L"Arial Rounded MT");
@@ -50,6 +50,8 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         EnumChildWindows(m_hwnd, (WNDENUMPROC)&MainWindow::setFont,
                          (LPARAM)m_font);
         SendMessage(m_mainMenu->nameEdit(), WM_SETFONT, (WPARAM)m_smallFont, TRUE);
+        SendMessage(m_records->difficultyComboBox(), WM_SETFONT, (WPARAM)m_smallFont, TRUE);
+        SendMessage(m_records->mapComboBox(), WM_SETFONT, (WPARAM)m_smallFont, TRUE);
         return 0;
     }
     case WM_PAINT: {
@@ -61,9 +63,7 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         return 0;
     }
     case StartGame: {
-        ShowWindow(m_mainMenu->window(), SW_HIDE);
-        ShowWindow(m_changeMode->window(), SW_HIDE);
-        ShowWindow(m_snakeGame->window(), SW_SHOW);
+        showWindow(m_snakeGame->window());
         m_snakeGame->startGame();
         return 0;
     }
@@ -74,15 +74,15 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         return 0;
     }
     case ToMainMenu:{
-        ShowWindow(m_snakeGame->window(), SW_HIDE);
-        ShowWindow(m_changeMode->window(), SW_HIDE);
-        ShowWindow(m_mainMenu->window(), SW_SHOW);
+        showWindow(m_mainMenu->window());
         return 0;
     }
     case ToChangeMode: {
-        ShowWindow(m_snakeGame->window(), SW_HIDE);
-        ShowWindow(m_mainMenu->window(), SW_HIDE);
-        ShowWindow(m_changeMode->window(), SW_SHOW);
+        showWindow(m_changeMode->window());
+        return 0;
+    }
+    case ToRecords: {
+        showWindow(m_records->window());
         return 0;
     }
     case SetObstacles: {
@@ -100,4 +100,14 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
 
     return DefWindowProc(m_hwnd, uMsg, wParam, lParam);
+}
+
+void MainWindow::showWindow(HWND window)
+{
+    ShowWindow(m_snakeGame->window(), SW_HIDE);
+    ShowWindow(m_mainMenu->window(), SW_HIDE);
+    ShowWindow(m_changeMode->window(), SW_HIDE);
+    ShowWindow(m_records->window(), SW_HIDE);
+
+    ShowWindow(window, SW_SHOW);
 }

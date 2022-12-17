@@ -40,6 +40,7 @@ LRESULT MainMenu::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
                                     WS_CHILD | WS_VISIBLE | ES_CENTER | WS_BORDER,
                                     428, 20, 344, 30, m_hwnd,
                                     (HMENU)NameEditId, nullptr, nullptr);
+        SendMessage(m_nameEdit, EM_SETLIMITTEXT, 10, 0);
         return 0;
     }
     case WM_DRAWITEM: {

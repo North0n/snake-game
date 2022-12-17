@@ -120,7 +120,7 @@ LRESULT ChangeModeWidget::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         case MediumButtonId:
         case HardButtonId: {
             auto difficulty = LOWORD(wParam) - 1;
-            appSettings->set_difficulty(static_cast<SnakeGame::Difficulty>(difficulty));
+            appSettings->set_difficulty(static_cast<Difficulty>(difficulty));
             InvalidateRect(m_hwnd, nullptr, true);
             return 0;
         }

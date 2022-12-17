@@ -13,7 +13,7 @@ Settings::Settings()
         m_json = nlohmann::json::object();
 
         set_mapIndex(0);
-        set_difficulty(SnakeGame::Difficulty::Easy);
+        set_difficulty(Difficulty::Easy);
         set_playerName(toUtf8(L"Игрок"));
     }
 }
