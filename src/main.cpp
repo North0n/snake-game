@@ -1,5 +1,7 @@
 #include "widgets/mainwindow.h"
 
+#include "controls/registereditcontrol.h"
+
 constexpr auto WindowStyle = WS_OVERLAPPEDWINDOW & ~WS_MAXIMIZEBOX & ~WS_THICKFRAME;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -10,6 +12,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
     ULONG_PTR gdiPlusToken;
     Gdiplus::GdiplusStartup(&gdiPlusToken, &gdiplusStartupInput, NULL);
+
+    RegisterEditControl registerEditControl;
 
     RECT windowRect = { 0, 0, 1200, 600 };
     AdjustWindowRect(&windowRect, WindowStyle, FALSE);
