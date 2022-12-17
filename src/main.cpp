@@ -1,5 +1,7 @@
 #include "widgets/mainwindow.h"
 
+constexpr auto WindowStyle = WS_OVERLAPPEDWINDOW & ~WS_MAXIMIZEBOX & ~WS_THICKFRAME;
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                       _In_opt_ HINSTANCE hPrevInstance,
                       _In_ LPWSTR lpCmdLine,
@@ -10,9 +12,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     Gdiplus::GdiplusStartup(&gdiPlusToken, &gdiplusStartupInput, NULL);
 
     RECT windowRect = { 0, 0, 1200, 600 };
-    AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW & ~WS_MAXIMIZEBOX, FALSE);
+    AdjustWindowRect(&windowRect, WindowStyle, FALSE);
     MainWindow win;
-    if (!win.create(L"Змейка", WS_OVERLAPPEDWINDOW & ~WS_MAXIMIZEBOX & ~WS_THICKFRAME , 0,
+    if (!win.create(L"Змейка", WindowStyle , 0,
                     100, 100, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top,
                     nullptr, nullptr, nullptr, L"AppIcon")) {
         return 0;
