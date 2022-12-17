@@ -26,6 +26,7 @@ public:
     enum Message : UINT
     {
         StartGame = WM_USER + 0,
+        EndGame,
         ToChangeMode,
         ToMainMenu,
         SetObstacles,

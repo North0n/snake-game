@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 
+#include "services/settings.h"
+
 MainWindow::MainWindow()
     : IWindow<MainWindow>()
     , m_snakeGame(std::make_unique<SnakeGame>())
@@ -63,6 +65,12 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         ShowWindow(m_changeMode->window(), SW_HIDE);
         ShowWindow(m_snakeGame->window(), SW_SHOW);
         m_snakeGame->startGame();
+        return 0;
+    }
+    case EndGame: {
+        auto score = static_cast<int>(wParam);
+        m_records->addRecord(Settings::fromUtf8(appSettings->playerName()), score,
+                             appSettings->difficulty(), appSettings->mapIndex());
         return 0;
     }
     case ToMainMenu:{

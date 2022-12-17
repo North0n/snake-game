@@ -31,6 +31,7 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             std::wstringstream ss;
             ss << L"Игра окончена! Ваш счёт: " << m_score << L". Заново?";
             auto res = MessageBox(m_hwnd, ss.str().c_str(), L"Игра окончена", MB_OK | MB_YESNO);
+            SendMessage(GetParent(m_hwnd), MainWindow::EndGame, m_score, 0);
             if (res == IDYES) {
                 startGame();
             } else {
