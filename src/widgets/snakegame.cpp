@@ -18,42 +18,71 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         return 0;
     }
     case WM_TIMER: {
-        if (m_snakeDirection == Vector{0, 0}) {
-            return 0;
-        }
-        auto nextPoint = m_gridAligner.toCellCoords(m_snake->position() + m_snakeDirection * CellSize);
-        if (m_snake->contains(nextPoint) ||
-            nextPoint.x < 0|| nextPoint.x >= m_windowWidth ||
-            nextPoint.y < 0 || nextPoint.y >= m_windowHeight ||
-            bumpIntoObstacle(nextPoint)) {
-            KillTimer(m_hwnd, SnakeGameTimerId);
-
-            std::wstringstream ss;
-            ss << L"Игра окончена! Ваш счёт: " << m_score << L". Заново?";
-            auto res = MessageBox(m_hwnd, ss.str().c_str(), L"Игра окончена", MB_OK | MB_YESNO);
-            SendMessage(GetParent(m_hwnd), MainWindow::EndGame, m_score, 0);
-            if (res == IDYES) {
-                startGame();
-            } else {
-                SendMessage(GetParent(m_hwnd), MainWindow::ToMainMenu, 0, 0);
+        switch (wParam) {
+        case SnakeGameTimerId: {
+            if (m_snakeDirection == Vector{0, 0}) {
+                return 0;
             }
-            return 0;
-        }
-        if (m_apple->position() == nextPoint) {
-            m_snake->appendSegment();
-            ++m_score;
-            m_apple = std::make_unique<Apple>(generateApplePosition(), CellSize);
-            if (m_snakeGameTimerInterval > DifficultyParams[static_cast<int>(appSettings->difficulty())].minInterval) {
-                m_snakeGameTimerInterval -= DifficultyParams[static_cast<int>(appSettings->difficulty())].intervalStep;
-                if (m_isAccelerated) {
-                    SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval / 2, nullptr);
+            auto nextPoint = m_gridAligner.toCellCoords(m_snake->position() + m_snakeDirection * CellSize);
+            if (!m_isVulnerable && (m_snake->contains(nextPoint) ||
+                nextPoint.x < 0 || nextPoint.x >= m_windowWidth ||
+                nextPoint.y < 0 || nextPoint.y >= m_windowHeight ||
+                bumpIntoObstacle(nextPoint))) {
+                if (--m_lives < 0) {
+                    KillTimer(m_hwnd, SnakeGameTimerId);
+
+                    std::wstringstream ss;
+                    ss << L"Игра окончена! Ваш счёт: " << m_score << L". Заново?";
+                    auto res = MessageBox(m_hwnd, ss.str().c_str(), L"Игра окончена", MB_OK | MB_YESNO);
+                    SendMessage(GetParent(m_hwnd), MainWindow::EndGame, m_score, 0);
+                    if (res == IDYES) {
+                        startGame();
+                    } else {
+                        SendMessage(GetParent(m_hwnd), MainWindow::ToMainMenu, 0, 0);
+                    }
+                    return 0;
                 } else {
-                    SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval, nullptr);
+                    m_isVulnerable = true;
+                    SetTimer(m_hwnd, InvulnerabilityTimerId, InvulnerabilityTime, nullptr);
                 }
             }
+            if (m_apple->position() == nextPoint) {
+                m_snake->appendSegment();
+                ++m_score;
+                m_apple = std::make_unique<Apple>(generateEatablePosition(), CellSize);
+                if (m_snakeGameTimerInterval > DifficultyParams[static_cast<int>(appSettings->difficulty())].minInterval) {
+                    m_snakeGameTimerInterval -= DifficultyParams[static_cast<int>(appSettings->difficulty())].intervalStep;
+                    if (m_isAccelerated) {
+                        SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval / 2, nullptr);
+                    } else {
+                        SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval, nullptr);
+                    }
+                }
+
+                if (m_score % HeartFrequency == 0) {
+                    m_heart = std::make_unique<Heart>(generateEatablePosition(), CellSize);
+                    SetTimer(m_hwnd, HeartTimerId, HeartLifeTime, nullptr);
+                }
+            } else if (m_heart && m_heart->position() == nextPoint) {
+                KillTimer(m_hwnd, HeartTimerId);
+                m_heart.reset();
+                m_lives = min(m_lives + 1, MaxLivesCount);
+            }
+            m_snake->moveOn(m_snakeDirection * CellSize);
+            m_movedInDirection = true;
+            break;
         }
-        m_snake->moveOn(m_snakeDirection * CellSize);
-        m_movedInDirection = true;
+        case HeartTimerId: {
+            KillTimer(m_hwnd, HeartTimerId);
+            m_heart.reset();
+            break;
+        }
+        case InvulnerabilityTimerId: {
+            KillTimer(m_hwnd, InvulnerabilityTimerId);
+            m_isVulnerable = false;
+            break;
+        }
+        }
         InvalidateRect(m_hwnd, nullptr, TRUE);
         return 0;
     }
@@ -132,9 +161,13 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         Gdiplus::Graphics graphicsBack(&bitmap);
         graphicsBack.Clear(Gdiplus::Color::White);
         m_painter = std::make_unique<GdiPlusPainter>(graphicsBack);
-        m_painter->draw(*m_snake, m_snakeDirection);
+        m_painter->draw(*m_snake, m_snakeDirection, m_isVulnerable);
         m_painter->draw(*m_apple);
-        m_painter->draw(m_score);
+        if (m_heart) {
+            m_painter->draw(*m_heart);
+        }
+        m_painter->drawScore(m_score);
+        m_painter->drawLives(m_lives);
         m_painter->draw(m_obstacles);
         if (m_isGamePaused) {
             m_painter->drawPause(m_windowWidth, m_windowHeight);
@@ -157,7 +190,7 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     return DefWindowProc(m_hwnd, uMsg, wParam, lParam);
 }
 
-Point SnakeGame::generateApplePosition() const
+Point SnakeGame::generateEatablePosition() const
 {
     Point point{};
     do {
@@ -173,13 +206,15 @@ void SnakeGame::startGame()
     m_snake = std::make_unique<Snake>(Point(m_gridAligner.toCellCoords(m_windowWidth / 2),
                                             m_gridAligner.toCellCoords(m_windowHeight / 2)),
                                       HeadSideLength, CellSize);
-    m_apple = std::make_unique<Apple>(generateApplePosition(), CellSize);
+    m_apple = std::make_unique<Apple>(generateEatablePosition(), CellSize);
+    m_heart = nullptr;
 
-    m_snakeDirection = {0, 0};
-    m_movedInDirection = true;
-    m_score = 0;
-    m_isGamePaused = false;
-    m_isAccelerated = false;
+    m_snakeDirection         = {0, 0};
+    m_movedInDirection       = true;
+    m_score                  = 0;
+    m_isGamePaused           = false;
+    m_isAccelerated          = false;
+    m_lives                  = 0;
     m_snakeGameTimerInterval = DifficultyParams[static_cast<int>(appSettings->difficulty())].initialInterval;
 
     SetFocus(m_hwnd);

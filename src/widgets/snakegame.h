@@ -1,6 +1,7 @@
 #pragma once
 
 #include "entities/apple.h"
+#include "entities/heart.h"
 #include "entities/snake.h"
 #include "iwindow.h"
 #include "services/gdipluspainter.h"
@@ -29,7 +30,15 @@ private:
     static constexpr inline int HeadSideLength = 40;
     static constexpr inline int CellSize       = 40;
 
-    static constexpr inline int SnakeGameTimerId = 1;
+    static constexpr inline int SnakeGameTimerId       = 1;
+    static constexpr inline int HeartTimerId           = 2;
+    static constexpr inline int InvulnerabilityTimerId = 3;
+
+    static constexpr inline int HeartFrequency = 10;
+    static constexpr inline int HeartLifeTime  = 3000;
+    static constexpr inline int MaxLivesCount  = 3;
+
+    static constexpr inline int InvulnerabilityTime = 1000;
 
     static inline std::mt19937 m_random{std::random_device{}()};
     static inline std::uniform_int_distribution<> m_distribution{};
@@ -47,7 +56,7 @@ private:
         TimerParams{80, 150, 8},
         TimerParams{48, 100, 10}};
 
-    [[nodiscard]] Point generateApplePosition() const;
+    [[nodiscard]] Point generateEatablePosition() const;
 
     [[nodiscard]] bool bumpIntoObstacle(const Point& point) const;
 
@@ -65,7 +74,12 @@ private:
     int m_score = 0;
     std::vector<Point> m_obstacles;
 
+    int m_lives         = 0;
+    bool m_isVulnerable = false;
+
     std::unique_ptr<Snake> m_snake;
     std::unique_ptr<Apple> m_apple;
+    std::unique_ptr<Heart> m_heart;
+
     std::unique_ptr<GdiPlusPainter> m_painter;
 };

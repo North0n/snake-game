@@ -1,6 +1,7 @@
 #include "gdipluspainter.h"
 
 #include "entities/imagecontainer.h"
+#include "entities/heart.h"
 
 #include <algorithm>
 #include <string>
@@ -11,18 +12,21 @@ GdiPlusPainter::GdiPlusPainter(Graphics& graphics)
     : m_graphics(graphics)
     , m_appleImage(new ImageContainer)
     , m_headImage(new ImageContainer)
+    , m_heartImage(new ImageContainer)
 {
     m_appleImage->load(L"Apple", L"Image");
     m_headImage->load(L"Head", L"Image");
+    m_heartImage->load(L"Heart", L"Image");
 }
 
 GdiPlusPainter::~GdiPlusPainter()
 {
     delete m_appleImage;
     delete m_headImage;
+    delete m_heartImage;
 }
 
-void GdiPlusPainter::draw(const Snake& snake, const Vector& direction)
+void GdiPlusPainter::draw(const Snake& snake, const Vector& direction, bool isVulnerable)
 {
     // Draw head
     Matrix	matrix;
@@ -41,6 +45,11 @@ void GdiPlusPainter::draw(const Snake& snake, const Vector& direction)
     m_graphics.ResetTransform();
 
     // Draw body
+    if (isVulnerable) {
+        m_snakeBrush.SetColor(Color::Orange);
+    } else {
+        m_snakeBrush.SetColor(Color::Red);
+    }
     std::for_each(snake.body().begin(), snake.body().end(), [this](const auto& segment) {
         m_graphics.DrawRectangle(&m_snakePen, segment.position().x, segment.position().y, segment.sideLength(), segment.sideLength());
         m_graphics.FillRectangle(&m_snakeBrush, segment.position().x, segment.position().y, segment.sideLength(), segment.sideLength());
@@ -52,10 +61,19 @@ void GdiPlusPainter::draw(const Apple& apple)
     m_graphics.DrawImage(*m_appleImage, apple.position().x, apple.position().y, apple.sideLength(), apple.sideLength());
 }
 
-void GdiPlusPainter::draw(int score)
+void GdiPlusPainter::draw(const Heart& heart)
 {
-    auto font = Font(L"Arial Rounded MT", 20);
-    m_graphics.DrawString((L"Ñ÷¸ò: " + std::to_wstring(score)).c_str(), -1, &font, PointF(0, 0), &m_textBrush);
+    m_graphics.DrawImage(*m_heartImage, heart.position().x, heart.position().y, heart.sideLength(), heart.sideLength());
+}
+
+void GdiPlusPainter::drawScore(int score)
+{
+    m_graphics.DrawString((L"Ñ÷¸ò: " + std::to_wstring(score)).c_str(), -1, &m_font, PointF(0, 0), &m_textBrush);
+}
+
+void GdiPlusPainter::drawLives(int livesCount)
+{
+    m_graphics.DrawString((L"Æèçíè: " + std::to_wstring(livesCount)).c_str(), -1, &m_font, PointF(0, 30), &m_textBrush);
 }
 
 void GdiPlusPainter::draw(const std::vector<::Point>& obstacles)
