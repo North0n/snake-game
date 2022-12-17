@@ -33,6 +33,10 @@ class Settings
 public:
     explicit Settings();
 
+    static std::string toUtf8(const std::wstring& wstring);
+
+    static std::wstring fromUtf8(const std::string& string);
+
     static void setFileName(const std::string& fileName);
 
     static std::string fileName();
