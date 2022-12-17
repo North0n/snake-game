@@ -2,12 +2,11 @@
 
 #include <filesystem>
 
-Settings::Settings(const std::string& fileName)
-    : m_fileName(fileName)
+Settings::Settings()
 {
-    if (std::filesystem::exists(fileName))
+    if (std::filesystem::exists(s_fileName))
     {
-        std::ifstream file(fileName);
+        std::ifstream file(s_fileName);
         file >> m_json;
     }
     else
@@ -18,4 +17,14 @@ Settings::Settings(const std::string& fileName)
         set_difficulty(SnakeGame::Difficulty::Easy);
         set_playerName("Player");
     }
+}
+
+void Settings::setFileName(const std::string& fileName)
+{
+    s_fileName = fileName;
+}
+
+std::string Settings::fileName()
+{
+    return s_fileName;
 }

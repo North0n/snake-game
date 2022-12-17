@@ -1,10 +1,13 @@
 #pragma once
 
 #include "json.hpp"
+#include "singleton.h"
 #include "widgets/snakegame.h"
 
 #include <fstream>
 #include <string>
+
+#define appSettings SINGLETON(Settings)
 
 #define PROPERTY(type, name)                     \
 public:                                          \
@@ -17,7 +20,7 @@ public:                                          \
     void set_##name(type value)                  \
     {                                            \
         m_json[#name] = value;                   \
-        std::ofstream file(m_fileName);          \
+        std::ofstream file(s_fileName);          \
         file << m_json;                          \
     }
 
@@ -28,9 +31,14 @@ class Settings
     PROPERTY(std::string, playerName)
 
 public:
-    explicit Settings(const std::string& fileName);
+    explicit Settings();
+
+    static void setFileName(const std::string& fileName);
+
+    static std::string fileName();
 
 private:
+    static inline std::string s_fileName = "settings.json";
+
     nlohmann::json m_json;
-    std::string m_fileName;
 };
