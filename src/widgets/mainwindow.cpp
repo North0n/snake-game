@@ -52,6 +52,7 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         SendMessage(m_mainMenu->nameEdit(), WM_SETFONT, (WPARAM)m_smallFont, TRUE);
         SendMessage(m_records->difficultyComboBox(), WM_SETFONT, (WPARAM)m_smallFont, TRUE);
         SendMessage(m_records->mapComboBox(), WM_SETFONT, (WPARAM)m_smallFont, TRUE);
+        SendMessage(m_records->nameComboBox(), WM_SETFONT, (WPARAM)m_smallFont, TRUE);
         return 0;
     }
     case WM_PAINT: {

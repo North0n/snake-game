@@ -7,6 +7,7 @@
 
 #include <list>
 #include <optional>
+#include <set>
 #include <string>
 
 class RecordsWindow : public IWindow<RecordsWindow>
@@ -19,6 +20,8 @@ public:
     HWND difficultyComboBox() const { return m_difficultyComboBox; }
 
     HWND mapComboBox() const { return m_mapComboBox; }
+
+    HWND nameComboBox() const { return m_nameComboBox; }
 
     void addRecord(const Record& record);
 
@@ -37,7 +40,8 @@ private:
     static constexpr inline int MainMenuButtonId     = 1;
     static constexpr inline int DifficultyComboBoxId = 2;
     static constexpr inline int MapComboBoxId        = 3;
-    static constexpr inline int ClearButtonId        = 4;
+    static constexpr inline int NameComboBoxId       = 4;
+    static constexpr inline int ClearButtonId        = 5;
 
     static constexpr inline int RecordsOnPage = 8;
 
@@ -46,6 +50,7 @@ private:
     HWND m_mainMenuButton;
     HWND m_difficultyComboBox;
     HWND m_mapComboBox;
+    HWND m_nameComboBox;
     HWND m_clearButton;
 
     std::string m_fileName = "records.json";
@@ -53,6 +58,8 @@ private:
 
     std::optional<Difficulty> m_filterDifficulty{};
     std::optional<int> m_filterMapIndex{};
+    std::optional<std::wstring> m_filterName{};
 
     std::unique_ptr<GdiPlusPainter> m_painter;
+    std::set<std::wstring> m_names;
 };

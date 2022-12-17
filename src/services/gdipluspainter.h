@@ -25,7 +25,8 @@ public:
     void draw(const std::list<Record>& records,
               const std::optional<Difficulty>& filterDifficulty,
               const std::optional<int>& filterMapIndex,
-              int maxRecordsCount = -1);
+              const std::optional<std::wstring>& filterName,
+              int maxRecordsCount);
     void drawPause(int width, int height);
 
 private:

@@ -38,17 +38,22 @@ LRESULT RecordsWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
                                             CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
                                             650, 25, 150, 20, m_hwnd, (HMENU)DifficultyComboBoxId, nullptr,
                                             nullptr);
-        SendMessage(m_difficultyComboBox, CB_ADDSTRING, 0, (LPARAM)L"Любая");
+        SendMessage(m_difficultyComboBox, CB_ADDSTRING, 0, (LPARAM)L"Все");
         SendMessage(m_difficultyComboBox, CB_ADDSTRING, 0, (LPARAM)L"Легкая");
         SendMessage(m_difficultyComboBox, CB_ADDSTRING, 0, (LPARAM)L"Средняя");
         SendMessage(m_difficultyComboBox, CB_ADDSTRING, 0, (LPARAM)L"Сложная");
         SendMessage(m_difficultyComboBox, CB_SETCURSEL, 0, 0);
 
+        m_nameComboBox = CreateWindow(WC_COMBOBOX, L"Имя",
+                                      CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
+                                      350, 25, 200, 20, m_hwnd, (HMENU)NameComboBoxId, nullptr,
+                                      nullptr);
+
         m_mapComboBox = CreateWindow(WC_COMBOBOX, L"Карта",
                                      CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
                                      800, 25, 150, 20, m_hwnd, (HMENU)MapComboBoxId, nullptr,
                                      nullptr);
-        SendMessage(m_mapComboBox, CB_ADDSTRING, 0, (LPARAM)L"Любая");
+        SendMessage(m_mapComboBox, CB_ADDSTRING, 0, (LPARAM)L"Все");
         SendMessage(m_mapComboBox, CB_ADDSTRING, 0, (LPARAM)L"Карта 1");
         SendMessage(m_mapComboBox, CB_ADDSTRING, 0, (LPARAM)L"Карта 2");
         SendMessage(m_mapComboBox, CB_ADDSTRING, 0, (LPARAM)L"Карта 3");
@@ -93,7 +98,7 @@ LRESULT RecordsWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         graphicsBack.Clear(Gdiplus::Color::White);
 
         m_painter = std::make_unique<GdiPlusPainter>(graphicsBack);
-        m_painter->draw(m_records, m_filterDifficulty, m_filterMapIndex, RecordsOnPage);
+        m_painter->draw(m_records, m_filterDifficulty, m_filterMapIndex, m_filterName, RecordsOnPage);
         m_painter = nullptr;
         graphics.DrawImage(&bitmap, 0, 0, 0, 0,
                            ps.rcPaint.right, ps.rcPaint.bottom, Gdiplus::UnitPixel);
@@ -129,6 +134,23 @@ LRESULT RecordsWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
                     m_filterMapIndex = std::nullopt;
                 } else {
                     m_filterMapIndex = index - 1;
+                }
+                RECT rc{250, 57, 950, 475};
+                InvalidateRect(m_hwnd, &rc, true);
+            }
+            return 0;
+        }
+        case NameComboBoxId: {
+            if (HIWORD(wParam) == CBN_SELCHANGE) {
+                auto index = SendMessage(m_nameComboBox, CB_GETCURSEL, 0, 0);
+                if (index == 0) {
+                    m_filterName = std::nullopt;
+                } else {
+                    int len     = SendMessage(m_nameComboBox, CB_GETLBTEXTLEN, index, 0);
+                    auto lpBuff = new wchar_t[len + 1];
+                    SendMessage(m_nameComboBox, CB_GETLBTEXT, index, (LPARAM)lpBuff);
+                    m_filterName = lpBuff;
+                    delete[] lpBuff;
                 }
                 RECT rc{250, 57, 950, 475};
                 InvalidateRect(m_hwnd, &rc, true);
@@ -179,6 +201,10 @@ void RecordsWindow::addRecord(const Record& record)
         }
     } else {
         m_records.insert(elementGreater, record);
+        if (!m_names.contains(record.name)) {
+            m_names.insert(record.name);
+            SendMessage(m_nameComboBox, CB_ADDSTRING, 0, (LPARAM)record.name.c_str());
+        }
     }
 
     if (!shouldSave) {
@@ -217,6 +243,7 @@ void RecordsWindow::setFileName(const std::string& fileName)
     nlohmann::json json;
     file >> json;
 
+    m_names.clear();
     for (const auto& record : json) {
         Record r;
         r.name       = Settings::fromUtf8(record["name"].get<std::string>());
@@ -224,7 +251,15 @@ void RecordsWindow::setFileName(const std::string& fileName)
         r.difficulty = static_cast<Difficulty>(record["difficulty"].get<int>());
         r.mapIndex   = record["mapIndex"].get<int>();
         m_records.push_back(r);
+        m_names.insert(r.name);
     }
+
+    SendMessage(m_nameComboBox, CB_RESETCONTENT, 0, 0);
+    SendMessage(m_nameComboBox, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(L"Все"));
+    for (const auto& name : m_names) {
+        SendMessage(m_nameComboBox, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(name.c_str()));
+    }
+    SendMessage(m_nameComboBox, CB_SETCURSEL, 0, 0);
 }
 
 void RecordsWindow::setWindowRegion(HWND hwnd)

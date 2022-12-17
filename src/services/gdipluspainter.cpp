@@ -69,6 +69,7 @@ void GdiPlusPainter::draw(const std::vector<::Point>& obstacles)
 void GdiPlusPainter::draw(const std::list<Record>& records,
                           const std::optional<Difficulty>& filterDifficulty,
                           const std::optional<int>& filterMapIndex,
+                          const std::optional<std::wstring>& filterName,
                           int maxRecordsCount)
 {
     auto font = new Font(L"Arial Rounded MT", 20);
@@ -79,13 +80,14 @@ void GdiPlusPainter::draw(const std::list<Record>& records,
 
     // Draw header
     m_graphics.DrawString(L"Номер", -1, font, PointF(250, 25), &brush);
-    m_graphics.DrawString(L"Имя", -1, font, PointF(350, 25), &brush);
     m_graphics.DrawString(L"Счёт", -1, font, PointF(550, 25), &brush);
 
     // Draw records
     int i = 0;
     for (auto it = records.cbegin(); it != records.cend() && i < maxRecordsCount; ++it) {
-        if ((!filterDifficulty || it->difficulty == *filterDifficulty) && (!filterMapIndex || it->mapIndex == *filterMapIndex)) {
+        if ((!filterDifficulty || it->difficulty == *filterDifficulty) &&
+            (!filterMapIndex || it->mapIndex == *filterMapIndex) &&
+            (!filterName || it->name == *filterName)) {
             m_graphics.DrawString(std::to_wstring(i + 1).c_str(), -1, font, PointF(250, 75 + i * 50), &brush);
             m_graphics.DrawString(it->name.c_str(), -1, font, PointF(350, 75 + i * 50), &brush);
             m_graphics.DrawString(std::to_wstring(it->score).c_str(), -1, font, PointF(550, 75 + i * 50), &brush);
