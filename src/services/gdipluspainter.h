@@ -10,12 +10,15 @@
 #include <optional>
 #pragma comment(lib, "Gdiplus.lib")
 
+class ImageContainer;
+
 class GdiPlusPainter
 {
 public:
     GdiPlusPainter(Gdiplus::Graphics& graphics);
+    ~GdiPlusPainter();
 
-    void draw(const Snake& snake);
+    void draw(const Snake& snake, const Vector& direction);
     void draw(const Apple& apple);
     void draw(const std::vector<Point>& obstacles);
     void draw(int score);
@@ -40,4 +43,7 @@ private:
     Gdiplus::SolidBrush m_obstacleBrush{Gdiplus::Color::Gray};
 
     Gdiplus::SolidBrush m_textBrush{Gdiplus::Color::Black};
+
+    ImageContainer* m_appleImage;
+    ImageContainer* m_headImage;
 };

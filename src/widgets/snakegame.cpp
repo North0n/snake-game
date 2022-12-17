@@ -119,7 +119,7 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         Gdiplus::Graphics graphicsBack(&bitmap);
         graphicsBack.Clear(Gdiplus::Color::White);
         m_painter = std::make_unique<GdiPlusPainter>(graphicsBack);
-        m_painter->draw(*m_snake);
+        m_painter->draw(*m_snake, m_snakeDirection);
         m_painter->draw(*m_apple);
         m_painter->draw(m_score);
         m_painter->draw(m_obstacles);

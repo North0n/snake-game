@@ -1,5 +1,7 @@
 #include "gdipluspainter.h"
 
+#include "entities/imagecontainer.h"
+
 #include <algorithm>
 #include <string>
 
@@ -7,14 +9,36 @@ using namespace Gdiplus;
 
 GdiPlusPainter::GdiPlusPainter(Graphics& graphics)
     : m_graphics(graphics)
+    , m_appleImage(new ImageContainer)
+    , m_headImage(new ImageContainer)
 {
+    m_appleImage->load(L"Apple", L"Image");
+    m_headImage->load(L"Head", L"Image");
 }
 
-void GdiPlusPainter::draw(const Snake& snake)
+GdiPlusPainter::~GdiPlusPainter()
+{
+    delete m_appleImage;
+    delete m_headImage;
+}
+
+void GdiPlusPainter::draw(const Snake& snake, const Vector& direction)
 {
     // Draw head
+    Matrix	matrix;
+    REAL angle = 0;
+    if (direction == Vector{1, 0}) {
+        angle = 90;
+    } else if (direction == Vector{0, 1}) {
+        angle = 180;
+    } else if (direction == Vector{-1, 0}) {
+        angle = 270;
+    }
+    matrix.RotateAt(angle, PointF(snake.position().x + snake.headSideLength() / 2.0f, snake.position().y + snake.headSideLength() / 2.0f));
+    m_graphics.SetTransform(&matrix);
     m_graphics.DrawRectangle(&m_snakePen, snake.position().x, snake.position().y, snake.headSideLength(), snake.headSideLength());
-    m_graphics.FillRectangle(&m_snakeBrush, snake.position().x, snake.position().y, snake.headSideLength(), snake.headSideLength());
+    m_graphics.DrawImage(*m_headImage, snake.position().x, snake.position().y, snake.headSideLength(), snake.headSideLength());
+    m_graphics.ResetTransform();
 
     // Draw body
     std::for_each(snake.body().begin(), snake.body().end(), [this](const auto& segment) {
@@ -25,8 +49,7 @@ void GdiPlusPainter::draw(const Snake& snake)
 
 void GdiPlusPainter::draw(const Apple& apple)
 {
-    m_graphics.DrawRectangle(&m_applePen, apple.position().x, apple.position().y, apple.sideLength(), apple.sideLength());
-    m_graphics.FillRectangle(&m_appleBrush, apple.position().x, apple.position().y, apple.sideLength(), apple.sideLength());
+    m_graphics.DrawImage(*m_appleImage, apple.position().x, apple.position().y, apple.sideLength(), apple.sideLength());
 }
 
 void GdiPlusPainter::draw(int score)
