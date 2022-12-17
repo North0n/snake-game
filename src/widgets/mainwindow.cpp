@@ -35,12 +35,19 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
                             0, 0, m_windowWidth, m_windowHeight,
                             m_hwnd, (HMENU)RecordsId, (HBRUSH)(COLOR_WINDOW + 1));
 
-        HFONT hFont = CreateFont(48, 0, 0, 0, FW_BOLD,
+        m_font = CreateFont(48, 0, 0, 0, FW_BOLD,
+                            FALSE, FALSE, FALSE, RUSSIAN_CHARSET,
+                            OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+                            DEFAULT_PITCH | FF_DONTCARE, L"Arial Rounded MT");
+
+        m_smallFont = CreateFont(20, 0, 0, 0, FW_BOLD,
                                  FALSE, FALSE, FALSE, RUSSIAN_CHARSET,
                                  OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
                                  DEFAULT_PITCH | FF_DONTCARE, L"Arial Rounded MT");
+
         EnumChildWindows(m_hwnd, (WNDENUMPROC)&MainWindow::setFont,
-                         (LPARAM)hFont);
+                         (LPARAM)m_font);
+        SendMessage(m_mainMenu->nameEdit(), WM_SETFONT, (WPARAM)m_smallFont, TRUE);
         return 0;
     }
     case WM_PAINT: {
@@ -78,6 +85,8 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_ERASEBKGND:
         return TRUE;
     case WM_DESTROY:
+        DeleteObject(m_smallFont);
+        DeleteObject(m_font);
         PostQuitMessage(0);
         return 0;
     }

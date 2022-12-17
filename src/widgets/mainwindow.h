@@ -41,6 +41,9 @@ private:
     int m_windowWidth;
     int m_windowHeight;
 
+    HFONT m_font;
+    HFONT m_smallFont;
+
     std::unique_ptr<SnakeGame> m_snakeGame;
     std::unique_ptr<MainMenu> m_mainMenu;
     std::unique_ptr<ChangeModeWidget> m_changeMode;
