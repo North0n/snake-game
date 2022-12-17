@@ -66,6 +66,8 @@ LRESULT ChangeModeWidget::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         m_map3Image = new ImageContainer;
         m_map3Image->load(L"Map3", L"Image");
+
+        SendMessage(GetParent(m_hwnd), MainWindow::Message::SetObstacles, reinterpret_cast<WPARAM>(&MapsOfObstacles[appSettings->mapIndex()]), 0);
         return 0;
     case WM_DRAWITEM: {
         auto item = (LPDRAWITEMSTRUCT)lParam;
