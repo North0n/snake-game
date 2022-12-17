@@ -22,9 +22,17 @@ LRESULT RecordsWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_CREATE: {
         m_mainMenuButton = CreateWindowEx(WS_EX_CLIENTEDGE, L"BUTTON", L"Назад",
                                           WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
-                                          400, 500, 400, 75, m_hwnd,
+                                          240, 500, 340, 75, m_hwnd,
                                           (HMENU)MainMenuButtonId, nullptr, nullptr);
         setWindowRegion(m_mainMenuButton);
+
+        m_clearButton = CreateWindowEx(WS_EX_CLIENTEDGE, L"BUTTON", L"Очистить",
+                                       WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
+                                       610, 500, 350, 75, m_hwnd,
+                                       (HMENU)ClearButtonId, nullptr, nullptr);
+        setWindowRegion(m_clearButton);
+        setWindowRegion(m_clearButton);
+        setWindowRegion(m_clearButton);
 
         m_difficultyComboBox = CreateWindow(WC_COMBOBOX, L"Сложность",
                                             CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
@@ -124,6 +132,15 @@ LRESULT RecordsWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             }
             return 0;
         }
+        case ClearButtonId: {
+            clearRecords();
+            m_filterDifficulty = std::nullopt;
+            m_filterMapIndex = std::nullopt;
+            SendMessage(m_difficultyComboBox, CB_SETCURSEL, 0, 0);
+            SendMessage(m_mapComboBox, CB_SETCURSEL, 0, 0);
+            InvalidateRect(m_hwnd, nullptr, true);
+            return 0;
+        }
         }
         return 0;
     }
@@ -150,6 +167,13 @@ void RecordsWindow::addRecord(const Record& record)
 
     std::ofstream file(m_fileName);
     file << std::setw(4) << json;
+}
+
+void RecordsWindow::clearRecords()
+{
+    m_records.clear();
+    std::ofstream file(m_fileName);
+    file << "[]";
 }
 
 void RecordsWindow::setFileName(const std::string& fileName)

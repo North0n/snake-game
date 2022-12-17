@@ -27,6 +27,8 @@ public:
         addRecord(Record{name, score, difficulty, mapIndex});
     }
 
+    void clearRecords();
+
     void setFileName(const std::string& fileName);
 
     std::string fileName() { return m_fileName; }
@@ -35,6 +37,7 @@ private:
     static constexpr inline int MainMenuButtonId     = 1;
     static constexpr inline int DifficultyComboBoxId = 2;
     static constexpr inline int MapComboBoxId        = 3;
+    static constexpr inline int ClearButtonId        = 4;
 
     static constexpr inline int RecordsOnPage = 8;
 
@@ -43,6 +46,7 @@ private:
     HWND m_mainMenuButton;
     HWND m_difficultyComboBox;
     HWND m_mapComboBox;
+    HWND m_clearButton;
 
     std::string m_fileName = "records.json";
     std::list<Record> m_records;
