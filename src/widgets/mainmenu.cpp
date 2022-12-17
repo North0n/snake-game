@@ -13,19 +13,25 @@ LRESULT MainMenu::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_CREATE: {
         m_playButton = CreateWindowEx(WS_EX_CLIENTEDGE, L"BUTTON", L"Играть",
                                       WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
-                                      425, 50, 350, 100, m_hwnd,
+                                      425, 25, 350, 100, m_hwnd,
                                       (HMENU)PlayButtonId, nullptr, nullptr);
         setWindowRegion(m_playButton);
 
         m_changeModeButton = CreateWindowEx(WS_EX_CLIENTEDGE, L"BUTTON", L"Сменить режим",
                                             WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
-                                            425, 200, 350, 100, m_hwnd,
+                                            425, 175, 350, 100, m_hwnd,
                                             (HMENU)ChangeModeButtonId, nullptr, nullptr);
         setWindowRegion(m_changeModeButton);
 
+        m_recordsButton = CreateWindowEx(WS_EX_CLIENTEDGE, L"BUTTON", L"Рекорды",
+                                         WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
+                                         425, 325, 350, 100, m_hwnd,
+                                         (HMENU)RecordsButtonId, nullptr, nullptr);
+        setWindowRegion(m_recordsButton);
+
         m_exitButton = CreateWindowEx(WS_EX_CLIENTEDGE, L"BUTTON", L"Выход",
                                       WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
-                                      425, 350, 350, 100, m_hwnd,
+                                      425, 475, 350, 100, m_hwnd,
                                       (HMENU)ExitButtonId, nullptr, nullptr);
         setWindowRegion(m_exitButton);
         return 0;
@@ -65,7 +71,10 @@ LRESULT MainMenu::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             SendMessage(GetParent(m_hwnd), WM_CLOSE, 0, 0);
             break;
         case ChangeModeButtonId:
-            SendMessage(GetParent(m_hwnd), MainWindow::ChangeMode, 0, 0);
+            SendMessage(GetParent(m_hwnd), MainWindow::ToChangeMode, 0, 0);
+            break;
+        case RecordsButtonId:
+            SendMessage(GetParent(m_hwnd), MainWindow::ToRecords, 0, 0);
             break;
         }
         return 0;

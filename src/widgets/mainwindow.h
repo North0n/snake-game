@@ -3,6 +3,7 @@
 #include "changemode.h"
 #include "iwindow.h"
 #include "mainmenu.h"
+#include "recordswindow.h"
 #include "snakegame.h"
 
 #include <memory>
@@ -25,16 +26,18 @@ public:
     enum Message : UINT
     {
         StartGame = WM_USER + 0,
-        ChangeMode,
+        ToChangeMode,
         ChangeDifficulty,
         ToMainMenu,
-        SetObstacles
+        SetObstacles,
+        ToRecords
     };
 
 private:
     static constexpr inline int SnakeGameId  = 1;
     static constexpr inline int MainMenuId   = 2;
     static constexpr inline int ChangeModeId = 3;
+    static constexpr inline int RecordsId    = 4;
 
     int m_windowWidth;
     int m_windowHeight;
@@ -42,4 +45,5 @@ private:
     std::unique_ptr<SnakeGame> m_snakeGame;
     std::unique_ptr<MainMenu> m_mainMenu;
     std::unique_ptr<ChangeModeWidget> m_changeMode;
+    std::unique_ptr<RecordsWindow> m_records;
 };

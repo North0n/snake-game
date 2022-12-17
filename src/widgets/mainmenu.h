@@ -12,10 +12,12 @@ private:
     static constexpr inline int PlayButtonId       = 1;
     static constexpr inline int ExitButtonId       = 2;
     static constexpr inline int ChangeModeButtonId = 3;
+    static constexpr inline int RecordsButtonId    = 4;
 
     static void setWindowRegion(HWND hwnd);
 
     HWND m_playButton;
     HWND m_exitButton;
     HWND m_changeModeButton;
+    HWND m_recordsButton;
 };

@@ -5,6 +5,7 @@ MainWindow::MainWindow()
     , m_snakeGame(std::make_unique<SnakeGame>())
     , m_mainMenu(std::make_unique<MainMenu>())
     , m_changeMode(std::make_unique<ChangeModeWidget>())
+    , m_records(std::make_unique<RecordsWindow>())
 {
 }
 
@@ -22,7 +23,7 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         m_windowWidth  = rc.right - rc.left;
         m_windowHeight = rc.bottom - rc.top;
         m_snakeGame->create(L"Snake Game", WS_CHILD, 0, // is hidden initially
-                            0, 0, 1200, 600,
+                            0, 0, m_windowWidth, m_windowHeight,
                             m_hwnd, (HMENU)SnakeGameId, (HBRUSH)(COLOR_BTNFACE + 1));
         m_mainMenu->create(L"Main Menu", WS_CHILD | WS_VISIBLE, 0,
                            0, 0, m_windowWidth, m_windowHeight,
@@ -30,6 +31,9 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         m_changeMode->create(L"Change Mode", WS_CHILD, 0, // is hidden initially
                              0, 0, m_windowWidth, m_windowHeight,
                              m_hwnd, (HMENU)ChangeModeId, (HBRUSH)(COLOR_WINDOW + 1));
+        m_records->create(L"Records Window", WS_CHILD, 0, // is hidden initially
+                            0, 0, m_windowWidth, m_windowHeight,
+                            m_hwnd, (HMENU)RecordsId, (HBRUSH)(COLOR_WINDOW + 1));
 
         HFONT hFont = CreateFont(48, 0, 0, 0, FW_BOLD,
                                  FALSE, FALSE, FALSE, RUSSIAN_CHARSET,
@@ -60,7 +64,7 @@ LRESULT MainWindow::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         ShowWindow(m_mainMenu->window(), SW_SHOW);
         return 0;
     }
-    case ChangeMode: {
+    case ToChangeMode: {
         ShowWindow(m_snakeGame->window(), SW_HIDE);
         ShowWindow(m_mainMenu->window(), SW_HIDE);
         ShowWindow(m_changeMode->window(), SW_SHOW);
