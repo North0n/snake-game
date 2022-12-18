@@ -13,10 +13,10 @@ Snake::Snake(int x, int y, int headSideLength, int bodySideLength)
 {
 }
 
-void Snake::moveOn(Vector vector)
+void Snake::moveOn(Vector vector, int width, int height)
 {
     auto headPosition = m_head.position();
-    m_head.moveOn(vector);
+    m_head.moveOn(vector, width, height);
 
     for (auto& segment : m_body) {
         auto segmentPosition = segment.position();

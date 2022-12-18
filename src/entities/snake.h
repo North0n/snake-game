@@ -11,7 +11,7 @@ public:
 
     Snake(int x, int y, int headSideLength, int bodySideLength);
 
-    void moveOn(Vector vector);
+    void moveOn(Vector vector, int width, int height);
 
     void appendSegment();
 

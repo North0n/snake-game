@@ -11,10 +11,10 @@ SnakeSegment::SnakeSegment(Point point, int sideLength)
 {
 }
 
-void SnakeSegment::moveOn(Vector vector)
+void SnakeSegment::moveOn(Vector vector, int width, int height)
 {
-    m_point.x += vector.x;
-    m_point.y += vector.y;
+    m_point.x = (m_point.x + vector.x + width) % width;
+    m_point.y = (m_point.y + vector.y + height) % height;
 }
 
 void SnakeSegment::moveTo(Point point)

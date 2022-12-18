@@ -25,8 +25,6 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             }
             auto nextPoint = m_gridAligner.toCellCoords(m_snake->position() + m_snakeDirection * CellSize);
             if (!m_isVulnerable && (m_snake->contains(nextPoint) ||
-                nextPoint.x < 0 || nextPoint.x >= m_windowWidth ||
-                nextPoint.y < 0 || nextPoint.y >= m_windowHeight ||
                 bumpIntoObstacle(nextPoint))) {
                 if (--m_lives < 0) {
                     KillTimer(m_hwnd, SnakeGameTimerId);
@@ -68,7 +66,7 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
                 m_heart.reset();
                 m_lives = min(m_lives + 1, MaxLivesCount);
             }
-            m_snake->moveOn(m_snakeDirection * CellSize);
+            m_snake->moveOn(m_snakeDirection * CellSize, m_windowWidth, m_windowHeight);
             m_movedInDirection = true;
             break;
         }

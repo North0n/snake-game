@@ -9,7 +9,7 @@ public:
 
     SnakeSegment(Point point, int sideLength);
 
-    void moveOn(Vector vector);
+    void moveOn(Vector vector, int width, int height);
 
     void moveTo(Point point);
 
