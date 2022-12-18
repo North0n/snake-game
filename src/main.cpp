@@ -1,6 +1,6 @@
-#include "widgets/mainwindow.h"
-
 #include "controls/registereditcontrol.h"
+#include "snakeversion.h"
+#include "widgets/mainwindow.h"
 
 constexpr auto WindowStyle = WS_OVERLAPPEDWINDOW & ~WS_MAXIMIZEBOX & ~WS_THICKFRAME;
 
@@ -18,7 +18,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     RECT windowRect = { 0, 0, 1200, 600 };
     AdjustWindowRect(&windowRect, WindowStyle, FALSE);
     MainWindow win;
-    if (!win.create(L"Змейка", WindowStyle , 0,
+    if (!win.create((std::wstring(L"Змейка ") + SNAKEGAME_VERSION).c_str(), WindowStyle , 0,
                     100, 100, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top,
                     nullptr, nullptr, nullptr, L"AppIcon")) {
         return 0;
