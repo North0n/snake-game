@@ -113,7 +113,11 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
                 return 0;
             }
             if (m_isGamePaused) {
-                SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval, nullptr);
+                if (m_isAccelerated) {
+                    SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval / 2, nullptr);
+                } else {
+                    SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval, nullptr);
+                }
             } else {
                 KillTimer(m_hwnd, SnakeGameTimerId);
             }
