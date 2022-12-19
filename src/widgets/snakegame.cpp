@@ -20,10 +20,15 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_TIMER: {
         switch (wParam) {
         case SnakeGameTimerId: {
+            // Don't do anything if game is paused
             if (m_snakeDirection == Vector{0, 0}) {
                 return 0;
             }
+
+            // Get next position of snake head
             auto nextPoint = m_gridAligner.toCellCoords(m_snake->position() + m_snakeDirection * CellSize);
+
+            // Check if snake is going to bump into something
             if (!m_isVulnerable && (m_snake->contains(nextPoint) ||
                 bumpIntoObstacle(nextPoint))) {
                 if (--m_lives < 0) {
@@ -44,6 +49,11 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
                     SetTimer(m_hwnd, InvulnerabilityTimerId, InvulnerabilityTime, nullptr);
                 }
             }
+
+            // Snake isn't going to bump into anything, so move it
+            m_snake->moveOn(m_snakeDirection * CellSize, m_windowWidth, m_windowHeight);
+
+            // Check if snake ate food or heart
             if (m_apple->position() == nextPoint) {
                 m_snake->appendSegment();
                 ++m_score;
@@ -66,7 +76,6 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
                 m_heart.reset();
                 m_lives = min(m_lives + 1, MaxLivesCount);
             }
-            m_snake->moveOn(m_snakeDirection * CellSize, m_windowWidth, m_windowHeight);
             m_movedInDirection = true;
             break;
         }
