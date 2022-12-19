@@ -46,7 +46,8 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
                     return 0;
                 } else {
                     m_isVulnerable = true;
-                    SetTimer(m_hwnd, InvulnerabilityTimerId, InvulnerabilityTime, nullptr);
+                    m_vulnerabilityTimeLeft = InvulnerabilityTime;
+                    SetTimer(m_hwnd, InvulnerabilityTimerId, InvulnerabilityTime / LifeTimeDivisor, nullptr);
                 }
             }
 
@@ -69,7 +70,8 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
                 if (m_score % HeartFrequency == 0) {
                     m_heart = std::make_unique<Heart>(generateEatablePosition(), CellSize);
-                    SetTimer(m_hwnd, HeartTimerId, HeartLifeTime, nullptr);
+                    m_heartTimeLeft = HeartLifeTime;
+                    SetTimer(m_hwnd, HeartTimerId, HeartLifeTime / LifeTimeDivisor, nullptr);
                 }
             } else if (m_heart && m_heart->position() == nextPoint) {
                 KillTimer(m_hwnd, HeartTimerId);
@@ -80,13 +82,19 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             break;
         }
         case HeartTimerId: {
-            KillTimer(m_hwnd, HeartTimerId);
-            m_heart.reset();
+            m_heartTimeLeft -= HeartLifeTime / LifeTimeDivisor;
+            if (m_heartTimeLeft <= 0) {
+                KillTimer(m_hwnd, HeartTimerId);
+                m_heart.reset();
+            }
             break;
         }
         case InvulnerabilityTimerId: {
-            KillTimer(m_hwnd, InvulnerabilityTimerId);
-            m_isVulnerable = false;
+            m_vulnerabilityTimeLeft -= InvulnerabilityTime / LifeTimeDivisor;
+            if (m_vulnerabilityTimeLeft <= 0) {
+                KillTimer(m_hwnd, InvulnerabilityTimerId);
+                m_isVulnerable = false;
+            }
             break;
         }
         }
@@ -118,8 +126,16 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
                 } else {
                     SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval, nullptr);
                 }
+                if (m_heartTimeLeft > 0) {
+                    SetTimer(m_hwnd, HeartTimerId, HeartLifeTime / LifeTimeDivisor, nullptr);
+                }
+                if (m_vulnerabilityTimeLeft > 0) {
+                    SetTimer(m_hwnd, InvulnerabilityTimerId, InvulnerabilityTimerId / LifeTimeDivisor, nullptr);
+                }
             } else {
                 KillTimer(m_hwnd, SnakeGameTimerId);
+                KillTimer(m_hwnd, HeartTimerId);
+                KillTimer(m_hwnd, InvulnerabilityTimerId);
             }
             m_isGamePaused = !m_isGamePaused;
             InvalidateRect(m_hwnd, nullptr, TRUE);
@@ -225,6 +241,9 @@ void SnakeGame::startGame()
     m_score                  = 0;
     m_isGamePaused           = false;
     m_isAccelerated          = false;
+    m_isVulnerable           = false;
+    m_heartTimeLeft          = 0;
+    m_vulnerabilityTimeLeft  = 0;
     m_lives                  = 0;
     m_snakeGameTimerInterval = DifficultyParams[static_cast<int>(appSettings->difficulty())].initialInterval;
 
