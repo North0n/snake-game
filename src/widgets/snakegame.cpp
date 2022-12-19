@@ -192,6 +192,10 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         m_painter->draw(*m_apple);
         if (m_heart) {
             m_painter->draw(*m_heart);
+            m_painter->drawHeartTimeLeft(m_heartTimeLeft, HeartLifeTime);
+        }
+        if (m_isVulnerable) {
+            m_painter->drawInvulnerabilityTimeLeft(m_vulnerabilityTimeLeft, InvulnerabilityTime);
         }
         m_painter->drawScore(m_score);
         m_painter->drawLives(m_lives);

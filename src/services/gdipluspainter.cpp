@@ -247,3 +247,19 @@ void GdiPlusPainter::drawPause(int width, int height)
 
     m_graphics.DrawString(L"Пауза", -1, &font, PointF(width / 2.0, height / 2.0), &format, &brush);
 }
+
+void GdiPlusPainter::drawHeartTimeLeft(int current, int total)
+{
+    Pen pen(Color::Red);
+    pen.SetWidth(5);
+
+    m_graphics.DrawArc(&pen, 0, 60, 25, 25, 90, 360 * static_cast<float>(current) / total);
+}
+
+void GdiPlusPainter::drawInvulnerabilityTimeLeft(int current, int total)
+{
+    Pen pen(Color::Orange);
+    pen.SetWidth(5);
+
+    m_graphics.DrawArc(&pen, 25, 60, 25, 25, 90, 360 * static_cast<float>(current) / total);
+}
