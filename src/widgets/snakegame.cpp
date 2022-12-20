@@ -20,10 +20,15 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_TIMER: {
         switch (wParam) {
         case SnakeGameTimerId: {
+            // Don't do anything if game is paused
             if (m_snakeDirection == Vector{0, 0}) {
                 return 0;
             }
+
+            // Get next position of snake head
             auto nextPoint = m_gridAligner.toCellCoords(m_snake->position() + m_snakeDirection * CellSize);
+
+            // Check if snake is going to bump into something
             if (!m_isVulnerable && (m_snake->contains(nextPoint) ||
                 bumpIntoObstacle(nextPoint))) {
                 if (--m_lives < 0) {
@@ -41,9 +46,15 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
                     return 0;
                 } else {
                     m_isVulnerable = true;
-                    SetTimer(m_hwnd, InvulnerabilityTimerId, InvulnerabilityTime, nullptr);
+                    m_vulnerabilityTimeLeft = InvulnerabilityTime;
+                    SetTimer(m_hwnd, InvulnerabilityTimerId, InvulnerabilityTime / LifeTimeDivisor, nullptr);
                 }
             }
+
+            // Snake isn't going to bump into anything, so move it
+            m_snake->moveOn(m_snakeDirection * CellSize, m_windowWidth, m_windowHeight);
+
+            // Check if snake ate food or heart
             if (m_apple->position() == nextPoint) {
                 m_snake->appendSegment();
                 ++m_score;
@@ -59,25 +70,31 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
                 if (m_score % HeartFrequency == 0) {
                     m_heart = std::make_unique<Heart>(generateEatablePosition(), CellSize);
-                    SetTimer(m_hwnd, HeartTimerId, HeartLifeTime, nullptr);
+                    m_heartTimeLeft = HeartLifeTime;
+                    SetTimer(m_hwnd, HeartTimerId, HeartLifeTime / LifeTimeDivisor, nullptr);
                 }
             } else if (m_heart && m_heart->position() == nextPoint) {
                 KillTimer(m_hwnd, HeartTimerId);
                 m_heart.reset();
                 m_lives = min(m_lives + 1, MaxLivesCount);
             }
-            m_snake->moveOn(m_snakeDirection * CellSize, m_windowWidth, m_windowHeight);
             m_movedInDirection = true;
             break;
         }
         case HeartTimerId: {
-            KillTimer(m_hwnd, HeartTimerId);
-            m_heart.reset();
+            m_heartTimeLeft -= HeartLifeTime / LifeTimeDivisor;
+            if (m_heartTimeLeft <= 0) {
+                KillTimer(m_hwnd, HeartTimerId);
+                m_heart.reset();
+            }
             break;
         }
         case InvulnerabilityTimerId: {
-            KillTimer(m_hwnd, InvulnerabilityTimerId);
-            m_isVulnerable = false;
+            m_vulnerabilityTimeLeft -= InvulnerabilityTime / LifeTimeDivisor;
+            if (m_vulnerabilityTimeLeft <= 0) {
+                KillTimer(m_hwnd, InvulnerabilityTimerId);
+                m_isVulnerable = false;
+            }
             break;
         }
         }
@@ -104,9 +121,21 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
                 return 0;
             }
             if (m_isGamePaused) {
-                SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval, nullptr);
+                if (m_isAccelerated) {
+                    SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval / 2, nullptr);
+                } else {
+                    SetTimer(m_hwnd, SnakeGameTimerId, m_snakeGameTimerInterval, nullptr);
+                }
+                if (m_heartTimeLeft > 0) {
+                    SetTimer(m_hwnd, HeartTimerId, HeartLifeTime / LifeTimeDivisor, nullptr);
+                }
+                if (m_vulnerabilityTimeLeft > 0) {
+                    SetTimer(m_hwnd, InvulnerabilityTimerId, InvulnerabilityTimerId / LifeTimeDivisor, nullptr);
+                }
             } else {
                 KillTimer(m_hwnd, SnakeGameTimerId);
+                KillTimer(m_hwnd, HeartTimerId);
+                KillTimer(m_hwnd, InvulnerabilityTimerId);
             }
             m_isGamePaused = !m_isGamePaused;
             InvalidateRect(m_hwnd, nullptr, TRUE);
@@ -163,6 +192,10 @@ LRESULT SnakeGame::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         m_painter->draw(*m_apple);
         if (m_heart) {
             m_painter->draw(*m_heart);
+            m_painter->drawHeartTimeLeft(m_heartTimeLeft, HeartLifeTime);
+        }
+        if (m_isVulnerable) {
+            m_painter->drawInvulnerabilityTimeLeft(m_vulnerabilityTimeLeft, InvulnerabilityTime);
         }
         m_painter->drawScore(m_score);
         m_painter->drawLives(m_lives);
@@ -212,6 +245,9 @@ void SnakeGame::startGame()
     m_score                  = 0;
     m_isGamePaused           = false;
     m_isAccelerated          = false;
+    m_isVulnerable           = false;
+    m_heartTimeLeft          = 0;
+    m_vulnerabilityTimeLeft  = 0;
     m_lives                  = 0;
     m_snakeGameTimerInterval = DifficultyParams[static_cast<int>(appSettings->difficulty())].initialInterval;
 

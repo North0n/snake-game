@@ -192,12 +192,12 @@ void RecordsWindow::addRecord(const Record& record)
         }
     }
 
-    auto shouldSave = true;
     if (sameElement != m_records.end()) {
         if (sameElement->score < record.score) {
-            sameElement->score = record.score;
+            m_records.insert(elementGreater, record);
+            m_records.erase(sameElement);
         } else {
-            shouldSave = false;
+            return;
         }
     } else {
         m_records.insert(elementGreater, record);
@@ -207,9 +207,6 @@ void RecordsWindow::addRecord(const Record& record)
         }
     }
 
-    if (!shouldSave) {
-        return;
-    }
     nlohmann::json json;
     std::transform(m_records.begin(), m_records.end(), std::back_inserter(json), [](const Record& r) {
         return nlohmann::json{

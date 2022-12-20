@@ -23,6 +23,8 @@ public:
     void draw(const Apple& apple);
     void draw(const Heart& heart);
     void draw(const std::vector<Point>& obstacles);
+    void drawHeartTimeLeft(int current, int total);
+    void drawInvulnerabilityTimeLeft(int current, int total);
     void drawScore(int score);
     void drawLives(int livesCount);
     void draw(const std::list<Record>& records,

@@ -40,6 +40,8 @@ private:
 
     static constexpr inline int InvulnerabilityTime = 1000;
 
+    static constexpr inline int LifeTimeDivisor = 20;
+
     static inline std::mt19937 m_random{std::random_device{}()};
     static inline std::uniform_int_distribution<> m_distribution{};
 
@@ -74,8 +76,10 @@ private:
     int m_score = 0;
     std::vector<Point> m_obstacles;
 
-    int m_lives         = 0;
-    bool m_isVulnerable = false;
+    int m_lives                 = 0;
+    bool m_isVulnerable         = false;
+    int m_heartTimeLeft         = 0;
+    int m_vulnerabilityTimeLeft = 0;
 
     std::unique_ptr<Snake> m_snake;
     std::unique_ptr<Apple> m_apple;
